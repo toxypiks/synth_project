@@ -27,6 +27,7 @@ target_include_directories(oscillator
  PRIVATE
   ${raylib_INCLUDE_DIRS}
   )
+
 target_link_libraries(oscillator
   ${raylib_LIBRARIES}
   m
@@ -42,6 +43,7 @@ target_sources(ray_out_buffer
  PRIVATE
   ${RAY_OUT_BUFFER_SOURCES}
   )
+
 target_include_directories(ray_out_buffer
  PRIVATE
  ${INCLUDE}
@@ -57,6 +59,7 @@ target_sources(jack_stuff
  PRIVATE
   ${JACK_STUFF_SOURCES}
   )
+
 target_include_directories(jack_stuff
  PRIVATE
  ${INCLUDE}
@@ -64,4 +67,29 @@ target_include_directories(jack_stuff
 
 target_link_libraries(jack_stuff
   ${JACK_LIBRARIES}
+  )
+
+set(SINE_WAVE_SRC
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/sine_wave.c
+  )
+
+add_executable(sine_wave)
+target_sources(sine_wave
+ PRIVATE
+  ${SINE_WAVE_SRC}
+  )
+
+target_include_directories(sine_wave
+  PRIVATE
+  ${raylib_INCLUDE_DIRS}
+  ${JACK_INCLUDE_DIRS}
+  )
+
+target_link_libraries(sine_wave
+  ${raylib_LIBRARIES}
+  ${JACK_LIBRARIES}
+  m
+  oscillator
+  ray_out_buffer
+  jack_stuff
   )
