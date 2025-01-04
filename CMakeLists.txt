@@ -85,6 +85,16 @@ target_include_directories(sine_wave
   ${JACK_INCLUDE_DIRS}
   )
 
+set(THREADING_EX_SRC
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/threading_example.c
+  )
+
+add_executable(threading_example)
+target_sources(threading_example
+ PRIVATE
+  ${THREADING_EX_SRC}
+  )
+
 target_link_libraries(sine_wave
   ${raylib_LIBRARIES}
   ${JACK_LIBRARIES}
