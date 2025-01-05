@@ -115,6 +115,10 @@ target_sources(consumer_producer_with_buf
   ${CONSUMER_PRODUCER_WITH_BUF_SRC}
   )
 
+target_link_libraries(consumer_producer_with_buf
+${JACK_LIBRARIES}
+)
+
 target_link_libraries(sine_wave
   ${raylib_LIBRARIES}
   ${JACK_LIBRARIES}
