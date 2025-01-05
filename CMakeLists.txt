@@ -85,14 +85,34 @@ target_include_directories(sine_wave
   ${JACK_INCLUDE_DIRS}
   )
 
-set(THREADING_EX_SRC
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/threading_example.c
+set(SINGLE_THREAD_EX_SRC
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/single_thread_example.c
   )
 
-add_executable(threading_example)
-target_sources(threading_example
+add_executable(single_thread_example)
+target_sources(single_thread_example
  PRIVATE
-  ${THREADING_EX_SRC}
+  ${SINGLE_THREAD_EX_SRC}
+  )
+
+set(CONSUMER_PRODUCER1_SRC
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/consumer_producer1.c
+  )
+
+add_executable(consumer_producer1)
+target_sources(consumer_producer1
+ PRIVATE
+  ${CONSUMER_PRODUCER1_SRC}
+  )
+
+set(CONSUMER_PRODUCER_WITH_BUF_SRC
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/consumer_producer_with_buf.c
+  )
+
+add_executable(consumer_producer_with_buf)
+target_sources(consumer_producer_with_buf
+ PRIVATE
+  ${CONSUMER_PRODUCER_WITH_BUF_SRC}
   )
 
 target_link_libraries(sine_wave
