@@ -85,6 +85,15 @@ target_include_directories(sine_wave
   ${JACK_INCLUDE_DIRS}
   )
 
+target_link_libraries(sine_wave
+  ${raylib_LIBRARIES}
+  ${JACK_LIBRARIES}
+  m
+  oscillator
+  ray_out_buffer
+  jack_stuff
+  )
+
 set(SINGLE_THREAD_EX_SRC
   ${CMAKE_CURRENT_SOURCE_DIR}/src/single_thread_example.c
   )
@@ -119,11 +128,17 @@ target_link_libraries(consumer_producer_with_buf
 ${JACK_LIBRARIES}
 )
 
-target_link_libraries(sine_wave
-  ${raylib_LIBRARIES}
+set(CONSUMER_PRODUCER_SINE_WAVE_SRC
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/consumer_producer_sine_wave.c
+  )
+
+add_executable(consumer_producer_sine_wave)
+target_sources(consumer_producer_sine_wave
+ PRIVATE
+  ${CONSUMER_PRODUCER_SINE_WAVE_SRC}
+  )
+
+target_link_libraries(consumer_producer_sine_wave
   ${JACK_LIBRARIES}
-  m
   oscillator
-  ray_out_buffer
-  jack_stuff
   )
