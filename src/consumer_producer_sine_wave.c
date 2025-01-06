@@ -22,12 +22,11 @@ void* print_data_thread_fct(void* thread_stuff_raw) {
     if(num_bytes >= 1024* sizeof(float)){
       jack_ringbuffer_read(thread_stuff->ringbuffer_data, (char*)&read_data, 1024 * sizeof(float));
       for (size_t i = 0; i < 1024; ++i) {
-        printf("ringbuffer_data:  %f\n", read_data[i]);
+        printf("%f\n", read_data[i]);
       }
     }
     usleep(46875);
   }
-  printf("print_data stopped\n");
 }
 
 void* gen_data_thread_fct(void* thread_stuff_raw) {
@@ -52,7 +51,6 @@ void* gen_data_thread_fct(void* thread_stuff_raw) {
         );
     }
   }
-  printf("gen_signal stopped\n");
 }
 
 int main(void) {
