@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <raylib.h>
+#include <raymath.h>
 #include <math.h>
 #include <jack/ringbuffer.h>
 #include <unistd.h>
@@ -14,12 +15,17 @@ int main(void) {
   float data_buf[1024];
   Oscillator osc = {.freq = 440, .time_step = 0};
 
-  const int screen_width = 1024;
-  const int screen_height = 768;
+  size_t window_factor = 80;
+  size_t screen_width = (16*window_factor);
+  size_t screen_height = (9*window_factor);
+  SetConfigFlags(FLAG_WINDOW_RESIZABLE);
   InitWindow(screen_width, screen_height, "sine_wave");
   SetTargetFPS(60);
 
   RayOutBuffer ray_out_buffer = create_ray_out_buffer(10000);
+
+  float scroll = 0.0f;
+  bool scroll_dragging = false;
 
   while(!WindowShouldClose()) {
     size_t num_bytes = jack_ringbuffer_read_space(jack_stuff->ringbuffer_audio);
@@ -45,11 +51,50 @@ int main(void) {
       }
       BeginDrawing();
       ClearBackground(BLACK);
-      for (size_t i = 0; i < ray_out_buffer.global_frames_count; ++i)
       {
-        if (i % 100 == 0) {
-          DrawCircle(i, screen_height/2 + (int)(ray_out_buffer.global_frames[i] * 100), 5, BLUE);
-          printf("%d", (int)ray_out_buffer.global_frames[i]);
+        int w = GetRenderWidth();
+        int h = GetRenderHeight();
+
+        float rw = w;
+        float rh = h*2.0/3.0;
+        float rx = 0;
+        float ry = h/2.0 - rh/2.0;
+
+        float scale = rh*0.01;
+        float pad = rh*0.05;
+
+        Vector2 size = { rw*(1.0/6.0), rh*0.02 };
+        Vector2 position = { rx + rw*2.0/3.0, ry + rh + pad };
+        DrawRectangleV(position, size, WHITE);
+
+        float knob_radius = rh*0.03;
+        Vector2 knob_position = { rx + rw*2.0/3.0 + (size.x*scroll), position.y + size.y*0.5f };
+        DrawCircleV(knob_position, knob_radius, BLUE);
+
+        if (scroll_dragging) {
+          float x = GetMousePosition().x;
+          if (x < position.x) x = position.x;
+          if (x > position.x + size.x) x = position.x + size.x;
+          scroll = (x - position.x)/size.x;
+        }
+
+        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+          Vector2 mouse_position = GetMousePosition();
+          if (Vector2Distance(mouse_position, knob_position) <= knob_radius) {
+            scroll_dragging = true;
+          }
+        }
+
+        if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
+          scroll_dragging = false;
+        }
+
+        for (size_t i = 0; i < ray_out_buffer.global_frames_count; ++i)
+        {
+          if (i % 100 == 0) {
+            DrawCircle(i, screen_height/2 + (int)(ray_out_buffer.global_frames[i] * 100), 5, BLUE);
+            //printf("%f", ray_out_buffer.global_frames[i]);
+          }
         }
       }
       EndDrawing();
