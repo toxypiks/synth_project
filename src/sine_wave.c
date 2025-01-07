@@ -24,13 +24,16 @@ int main(void) {
 
   RayOutBuffer ray_out_buffer = create_ray_out_buffer(10000);
 
+  float freq = 50.0f;
   float scroll = 0.0f;
   bool scroll_dragging = false;
 
   while(!WindowShouldClose()) {
     size_t num_bytes = jack_ringbuffer_read_space(jack_stuff->ringbuffer_audio);
     if(num_bytes < 96000 * sizeof(float)) {
-      gen_signal_in_buf(&osc, data_buf, 1024);
+      freq = 50.0 + 1000.0 * scroll;
+      change_frequency(&osc, freq);
+      gen_signal_in_buf(&osc,  data_buf, 1024);
       change_time_step(&osc, 1024);
       jack_ringbuffer_write(jack_stuff->ringbuffer_audio, (void *)data_buf, 1024*sizeof(float));
       jack_ringbuffer_write(jack_stuff->ringbuffer_video, (void *)data_buf, 1024*sizeof(float));
@@ -96,6 +99,9 @@ int main(void) {
             //printf("%f", ray_out_buffer.global_frames[i]);
           }
         }
+        char buffer[256];
+        snprintf(buffer, sizeof(buffer), "Frequency: %f", freq);
+        DrawText(buffer, 0, 0, h*0.04, WHITE);
       }
       EndDrawing();
     }
