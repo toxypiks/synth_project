@@ -142,3 +142,18 @@ target_link_libraries(consumer_producer_sine_wave
   ${JACK_LIBRARIES}
   oscillator
   )
+
+set(CONSUMER_PRODUCER_SINE_WAVE_JACK_SRC
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/consumer_producer_sine_wave_jack.c
+  )
+
+add_executable(consumer_producer_sine_wave_jack)
+target_sources(consumer_producer_sine_wave_jack
+ PRIVATE
+  ${CONSUMER_PRODUCER_SINE_WAVE_JACK_SRC}
+  )
+
+target_link_libraries(consumer_producer_sine_wave_jack
+  ${JACK_LIBRARIES}
+  oscillator
+  )
