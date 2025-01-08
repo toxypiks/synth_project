@@ -34,7 +34,7 @@ int main(void) {
 
   while(!WindowShouldClose()) {
     size_t num_bytes = jack_ringbuffer_read_space(jack_stuff->ringbuffer_audio);
-    if(num_bytes < 96000 * sizeof(float)) {
+    if(num_bytes < 48000 * sizeof(float)) {
       freq = 50.0 + 1000.0 * scroll_freq;
       change_frequency(&osc, freq);
       vol = 1.0 * scroll_vol;
