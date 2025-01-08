@@ -25,13 +25,17 @@ int main(void) {
   RayOutBuffer ray_out_buffer = create_ray_out_buffer(10000);
 
   float freq = 50.0f;
-  float scroll = 0.0f;
-  bool scroll_dragging = false;
+  float scroll_freq = 0.0f;
+  bool scroll_dragging_freq = false;
+
+  float vol = 0.0f;
+  float scroll_vol = 0.0f;
+  bool scroll_dragging_vol = false;
 
   while(!WindowShouldClose()) {
     size_t num_bytes = jack_ringbuffer_read_space(jack_stuff->ringbuffer_audio);
     if(num_bytes < 96000 * sizeof(float)) {
-      freq = 50.0 + 1000.0 * scroll;
+      freq = 50.0 + 1000.0 * scroll_freq;
       change_frequency(&osc, freq);
       gen_signal_in_buf(&osc,  data_buf, 1024);
       change_time_step(&osc, 1024);
@@ -67,29 +71,43 @@ int main(void) {
         float pad = rh*0.05;
 
         Vector2 size = { rw*(1.0/6.0), rh*0.02 };
-        Vector2 position = { rx + rw*2.0/3.0, ry + rh + pad };
-        DrawRectangleV(position, size, WHITE);
+        Vector2 position_freq = { rx + rw*2.0/3.0, ry + rh + pad };
+        Vector2 position_vol = { rx + rw*1.0/3.0, ry + rh + pad };
+        DrawRectangleV(position_freq, size, WHITE);
+        DrawRectangleV(position_vol, size, WHITE);
 
         float knob_radius = rh*0.03;
-        Vector2 knob_position = { rx + rw*2.0/3.0 + (size.x*scroll), position.y + size.y*0.5f };
-        DrawCircleV(knob_position, knob_radius, BLUE);
+        Vector2 knob_position_freq = { rx + rw*2.0/3.0 + (size.x*scroll_freq), position_freq.y + size.y*0.5f };
+        Vector2 knob_position_vol = { rx + rw*1.0/3.0 + (size.x*scroll_vol), position_freq.y + size.y*0.5f };
+        DrawCircleV(knob_position_freq, knob_radius, BLUE);
+        DrawCircleV(knob_position_vol, knob_radius, BLUE);
 
-        if (scroll_dragging) {
+        if (scroll_dragging_freq) {
           float x = GetMousePosition().x;
-          if (x < position.x) x = position.x;
-          if (x > position.x + size.x) x = position.x + size.x;
-          scroll = (x - position.x)/size.x;
+          if (x < position_freq.x) x = position_freq.x;
+          if (x > position_freq.x + size.x) x = position_freq.x + size.x;
+          scroll_freq = (x - position_freq.x)/size.x;
+        }
+        else if (scroll_dragging_vol) {
+          float x = GetMousePosition().x;
+          if (x < position_vol.x) x = position_vol.x;
+          if (x > position_vol.x + size.x) x = position_vol.x + size.x;
+          scroll_vol = (x - position_vol.x)/size.x;
         }
 
         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
           Vector2 mouse_position = GetMousePosition();
-          if (Vector2Distance(mouse_position, knob_position) <= knob_radius) {
-            scroll_dragging = true;
+          if (Vector2Distance(mouse_position, knob_position_freq) <= knob_radius) {
+            scroll_dragging_freq = true;
+          }
+          else if (Vector2Distance(mouse_position, knob_position_vol) <= knob_radius) {
+            scroll_dragging_vol = true;
           }
         }
 
         if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
-          scroll_dragging = false;
+          scroll_dragging_freq = false;
+          scroll_dragging_vol = false;
         }
 
         for (size_t i = 0; i < ray_out_buffer.global_frames_count; ++i)
