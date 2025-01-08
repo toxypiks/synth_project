@@ -13,7 +13,7 @@
 int main(void) {
   JackStuff* jack_stuff = create_jack_stuff("SineWaveWithJack", 192000);
   float data_buf[1024];
-  Oscillator osc = {.freq = 440, .time_step = 0};
+  Oscillator osc = {.freq = 440, .time_step = 0, .amp = 1.0};
 
   size_t window_factor = 80;
   size_t screen_width = (16*window_factor);
@@ -28,7 +28,7 @@ int main(void) {
   float scroll_freq = 0.0f;
   bool scroll_dragging_freq = false;
 
-  float vol = 0.0f;
+  float vol = 1.0f;
   float scroll_vol = 0.0f;
   bool scroll_dragging_vol = false;
 
@@ -37,6 +37,8 @@ int main(void) {
     if(num_bytes < 96000 * sizeof(float)) {
       freq = 50.0 + 1000.0 * scroll_freq;
       change_frequency(&osc, freq);
+      vol = 1.0 * scroll_vol;
+      change_amp(&osc, vol);
       gen_signal_in_buf(&osc,  data_buf, 1024);
       change_time_step(&osc, 1024);
       jack_ringbuffer_write(jack_stuff->ringbuffer_audio, (void *)data_buf, 1024*sizeof(float));
@@ -118,7 +120,7 @@ int main(void) {
           }
         }
         char buffer[256];
-        snprintf(buffer, sizeof(buffer), "Frequency: %f", freq);
+        snprintf(buffer, sizeof(buffer), "Volume: %f      Frequency: %f", vol, freq);
         DrawText(buffer, 0, 0, h*0.04, WHITE);
       }
       EndDrawing();
