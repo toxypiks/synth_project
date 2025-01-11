@@ -4,7 +4,7 @@
 #include <stddef.h>
 
 typedef struct Oscillator {
-  float amp;
+  float amp[1024];
   float freq;
   float phase;
 } Oscillator;
