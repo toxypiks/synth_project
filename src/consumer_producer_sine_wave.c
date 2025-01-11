@@ -42,7 +42,6 @@ void* gen_data_thread_fct(void* thread_stuff_raw) {
           usleep(46800); // 0.01 sec
     } else {
       gen_signal_in_buf(&thread_stuff->osc, cache_buf, 1024);
-      change_time_step(&thread_stuff->osc, 1024);
       //memcopy from buffer -> ringbuffer
       jack_ringbuffer_write(
         thread_stuff->ringbuffer_data,

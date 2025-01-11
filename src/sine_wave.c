@@ -13,7 +13,7 @@
 int main(void) {
   JackStuff* jack_stuff = create_jack_stuff("SineWaveWithJack", 192000);
   float data_buf[1024];
-  Oscillator osc = {.freq = 440, .time_step = 0, .amp = 1.0};
+  Oscillator osc = {.amp = 1.0, .freq = 440, .phase = 0};
 
   size_t window_factor = 80;
   size_t screen_width = (16*window_factor);
@@ -40,7 +40,6 @@ int main(void) {
       vol = 1.0 * scroll_vol;
       change_amp(&osc, vol);
       gen_signal_in_buf(&osc,  data_buf, 1024);
-      change_time_step(&osc, 1024);
       jack_ringbuffer_write(jack_stuff->ringbuffer_audio, (void *)data_buf, 1024*sizeof(float));
       jack_ringbuffer_write(jack_stuff->ringbuffer_video, (void *)data_buf, 1024*sizeof(float));
 
