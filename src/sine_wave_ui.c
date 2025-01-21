@@ -125,6 +125,24 @@ void widget(Ui_Rect r, Color c) {
   DrawRectangle(r.x, r.y, r.w, r.h, c);
 }
 
+void slider_widget(Ui_Rect r) {
+  float rw = r.w;
+  float rh = r.h;
+  float rx = r.x;
+  float ry = r.y;
+
+  float scale = rh*0.01;
+  float pad = rh*0.05;
+
+  Vector2 size_bar = { rw*0.8, rh*0.02 };
+  Vector2 position_bar = { rx + 0.1*rw, ry + 0.5*rh + pad };
+
+  DrawRectangleV(position_bar, size_bar, WHITE);
+  float knob_radius = rh*0.05;
+  Vector2 knob_position_freq = { position_bar.x, position_bar.y + size_bar.y*0.5};
+  DrawCircleV(knob_position_freq, knob_radius, BLUE);
+}
+
 int main (void)
 {
   size_t width = 800;
@@ -148,9 +166,10 @@ int main (void)
                 widget(layout_stack_slot(&ls), PURPLE);
                 layout_stack_pop(&ls);
                 widget(layout_stack_slot(&ls), BLUE);
-                layout_stack_push(&ls, LO_HORZ, layout_stack_slot(&ls), 2, 0);
-                widget(layout_stack_slot(&ls), YELLOW);
+                layout_stack_push(&ls, LO_HORZ, layout_stack_slot(&ls), 3, 0);
+                slider_widget(layout_stack_slot(&ls));
                 widget(layout_stack_slot(&ls), PINK);
+                slider_widget(layout_stack_slot(&ls));
                 layout_stack_pop(&ls);
                 layout_stack_pop(&ls);
     EndDrawing();
