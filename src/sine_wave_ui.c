@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <raylib.h>
+#include <raymath.h>
 #include <assert.h>
 #include <stdlib.h>
 
@@ -125,7 +126,15 @@ void widget(Ui_Rect r, Color c) {
   DrawRectangle(r.x, r.y, r.w, r.h, c);
 }
 
-void slider_widget(Ui_Rect r) {
+typedef struct {
+  bool scroll_dragging;
+  Vector2 size_bar;
+  Vector2 position_bar;
+  float knob_radius;
+  Vector2 knob_position;
+} Slider;
+
+void slider_widget(Ui_Rect r, float scroll, Slider slider) {
   float rw = r.w;
   float rh = r.h;
   float rx = r.x;
@@ -136,11 +145,35 @@ void slider_widget(Ui_Rect r) {
 
   Vector2 size_bar = { rw*0.8, rh*0.02 };
   Vector2 position_bar = { rx + 0.1*rw, ry + 0.5*rh + pad };
-
-  DrawRectangleV(position_bar, size_bar, WHITE);
+  Vector2 knob_position = {rx + 0.1*rw + (slider.size_bar.x*scroll), position_bar.y + size_bar.y*0.5};
   float knob_radius = rh*0.05;
-  Vector2 knob_position_freq = { position_bar.x, position_bar.y + size_bar.y*0.5};
-  DrawCircleV(knob_position_freq, knob_radius, BLUE);
+
+  slider.size_bar = size_bar;
+  slider.position_bar = position_bar;
+  slider.knob_radius = knob_radius;
+  slider.knob_position = knob_position;
+
+  if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+    Vector2 mouse_position = GetMousePosition();
+    if (Vector2Distance(mouse_position, slider.knob_position) <= slider.knob_radius) {
+      slider.scroll_dragging = true;
+      printf("YEAH\n");
+    }
+  }
+
+  if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
+    slider.scroll_dragging = false;
+  }
+
+  if (slider.scroll_dragging) {
+    float x = GetMousePosition().x;
+    if (x < slider.position_bar.x) x = slider.position_bar.x;
+    if (x > slider.position_bar.x + slider.size_bar.x) x = slider.position_bar.x + slider.size_bar.x;
+    scroll = (x - slider.position_bar.x)/slider.size_bar.x;
+  }
+
+  DrawRectangleV(slider.position_bar, slider.size_bar, WHITE);
+  DrawCircleV(slider.knob_position, slider.knob_radius, BLUE);
 }
 
 int main (void)
@@ -153,6 +186,8 @@ int main (void)
   SetTargetFPS(60);
 
   Layout_Stack ls = {0};
+  Slider slider = {0};
+  float scroll = 0.0f;
 
   while(!WindowShouldClose()) {
     float w = GetRenderWidth();
@@ -167,9 +202,9 @@ int main (void)
                 layout_stack_pop(&ls);
                 widget(layout_stack_slot(&ls), BLUE);
                 layout_stack_push(&ls, LO_HORZ, layout_stack_slot(&ls), 3, 0);
-                slider_widget(layout_stack_slot(&ls));
+                slider_widget(layout_stack_slot(&ls), scroll, slider);
                 widget(layout_stack_slot(&ls), PINK);
-                slider_widget(layout_stack_slot(&ls));
+                slider_widget(layout_stack_slot(&ls), scroll, slider);
                 layout_stack_pop(&ls);
                 layout_stack_pop(&ls);
     EndDrawing();
