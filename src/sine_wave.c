@@ -181,19 +181,29 @@ void slider_widget(Ui_Rect r, SliderState *slider_state) {
   DrawCircleV(knob_position, knob_radius, BLUE);
 }
 
-void button_widget(Ui_Rect r, Color c) {
+typedef struct Tone {
+  float current_vol;
+} Tone;
 
+void button_widget(Ui_Rect r, Color c, bool *is_pressed)
+{
   Vector2 button_position = {r.w/2, r.h/2};
   float button_radius = r.h * 0.1f;
-
+  *is_pressed = false;
   if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
     Vector2 mouse_position = GetMousePosition();
     if (CheckCollisionPointCircle(GetMousePosition(), button_position, button_radius)) {
       c = ColorBrightness(c, 0.75f);
+      *is_pressed = true;
     }
   }
 
   DrawCircleV(button_position, button_radius, c);
+  DrawCircleV(button_position, button_radius * 0.85, BLACK);
+  Vector2 v1 = {button_position.x + button_radius * 0.5, button_position.y};
+  Vector2 v2 = {button_position.x - button_radius * 0.2, button_position.y-button_radius * 0.35};
+  Vector2 v3 = {button_position.x - button_radius * 0.2, button_position.y+button_radius * 0.35};
+  DrawTriangle(v1, v2, v3, c);
 }
 
 void signal_widget(Ui_Rect r, RayOutBuffer *ray_out_buffer, Color c)
@@ -249,13 +259,17 @@ int main(void) {
     .vol = 1.0f
   };
 
+  Tone tone = {
+    .current_vol = 0.0f,
+  };
+
   while(!WindowShouldClose()) {
     size_t num_bytes = jack_ringbuffer_read_space(jack_stuff->ringbuffer_audio);
     if(num_bytes < 48000 * sizeof(float)) {
       text.freq = 50.0 + 1000.0 * slider_freq.scroll;
       change_frequency(&osc, text.freq);
       text.vol = 1.0 * slider_vol.scroll;
-      change_amp(&osc, text.vol);
+      change_amp(&osc, text.vol * tone.current_vol);
       gen_signal_in_buf(&osc,  data_buf, 1024);
       jack_ringbuffer_write(jack_stuff->ringbuffer_audio, (void *)data_buf, 1024*sizeof(float));
       jack_ringbuffer_write(jack_stuff->ringbuffer_video, (void *)data_buf, 1024*sizeof(float));
@@ -280,12 +294,14 @@ int main(void) {
       // float scale = rh*0.01;
       //float pad = rh*0.05;
 
+      bool is_play_pressed = false;
+
       BeginDrawing();
       ClearBackground(BLACK);
 
       layout_stack_push(&ls, LO_VERT, ui_rect(0, 0, w, h), 3, 0);
       layout_stack_push(&ls, LO_HORZ, layout_stack_slot(&ls), 2, 0);
-      button_widget(layout_stack_slot(&ls), PINK);
+      button_widget(layout_stack_slot(&ls), PINK, &is_play_pressed);
       text_widget(layout_stack_slot(&ls), &text);
       layout_stack_pop(&ls);
       signal_widget(layout_stack_slot(&ls), &ray_out_buffer, BLUE);
@@ -298,6 +314,8 @@ int main(void) {
 
       EndDrawing();
       assert(ls.count == 0);
+
+      tone.current_vol =  is_play_pressed ? 1.0 : 0.0;
     }
   }
   CloseWindow();
