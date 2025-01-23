@@ -182,13 +182,9 @@ void slider_widget(Ui_Rect r, SliderState *slider_state) {
 }
 
 void button_widget(Ui_Rect r, Color c) {
-  float rw = r.w;
-  float rh = r.h;
-  float rx = r.x;
-  float ry = r.y;
 
   Vector2 button_position = {r.w/2, r.h/2};
-  float button_radius = rh * 0.1f;
+  float button_radius = r.h * 0.1f;
 
   if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
     Vector2 mouse_position = GetMousePosition();
@@ -200,16 +196,17 @@ void button_widget(Ui_Rect r, Color c) {
   DrawCircleV(button_position, button_radius, c);
 }
 
-void signal_widget(Ui_Rect r, RayOutBuffer *ray_out_buffer, Color c) {
-  float rw = r.w;
-  float rh = r.h;
-  float rx = r.x;
-  float ry = r.y;
-
+void signal_widget(Ui_Rect r, RayOutBuffer *ray_out_buffer, Color c)
+{
   for (size_t i = 0; i < ray_out_buffer->global_frames_count; ++i)
   {
     if (i % 100 == 0) {
-      DrawCircle(i, rh*1.5 + (int)(ray_out_buffer->global_frames[i] * 100), 5, BLUE);
+      float xoffset = ((float)i)/((float)(ray_out_buffer->global_frames_count));
+      float yoffset = ray_out_buffer->global_frames[i] * 0.5 + 0.5;
+
+      float circle_x = r.x + xoffset * r.w;
+      float circle_y = r.y + yoffset * r.h;
+      DrawCircle(circle_x, circle_y, 2, BLUE);
     }
   }
 }
@@ -221,14 +218,9 @@ typedef struct {
 
 void text_widget(Ui_Rect r, Text *text)
 {
-  float rw = r.w;
-  float rh = r.h;
-  float rx = r.x;
-  float ry = r.y;
-
   char buffer[256];
-  snprintf(buffer, sizeof(buffer), "Volume: %f  Frequency: %f", text->vol, text->freq);
-  DrawText(buffer, 0, 0, rh*0.1, WHITE);
+  snprintf(buffer, sizeof(buffer), "Volume: %f           Frequency: %f", text->vol, text->freq);
+  DrawText(buffer, r.x, r.y, r.h*0.1, WHITE);
 }
 
 int main(void) {
