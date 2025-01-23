@@ -134,7 +134,7 @@ typedef struct {
   float scroll;
 } SliderState;
 
-void slider_widget(Ui_Rect r, SliderState *slider) {
+void slider_widget(Ui_Rect r, SliderState *slider_state) {
   float rw = r.w;
   float rh = r.h;
   float rx = r.x;
@@ -145,33 +145,62 @@ void slider_widget(Ui_Rect r, SliderState *slider) {
 
   Vector2 size_bar = {rw * 0.8, rh * 0.02};
   Vector2 position_bar = {rx + 0.1 * rw, ry + 0.5 * rh + pad};
-  Vector2 knob_position = {rx + 0.1 * rw + (size_bar.x * slider->scroll),
+  Vector2 knob_position = {rx + 0.1 * rw + (size_bar.x * slider_state->scroll),
                            position_bar.y + size_bar.y * 0.5};
   float knob_radius = rh * 0.05;
 
   if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
     Vector2 mouse_position = GetMousePosition();
     if (Vector2Distance(mouse_position, knob_position) <= knob_radius) {
-      slider->scroll_dragging = true;
+      slider_state->scroll_dragging = true;
       printf("YEAH\n");
     }
   }
 
   if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
-    slider->scroll_dragging = false;
+    slider_state->scroll_dragging = false;
   }
 
-  if (slider->scroll_dragging) {
+  if (slider_state->scroll_dragging) {
     float x = GetMousePosition().x;
     if (x < position_bar.x)
       x = position_bar.x;
     if (x > position_bar.x + size_bar.x)
       x = position_bar.x + size_bar.x;
-    slider->scroll = (x - position_bar.x) / size_bar.x;
+    slider_state->scroll = (x - position_bar.x) / size_bar.x;
   }
 
   DrawRectangleV(position_bar, size_bar, WHITE);
   DrawCircleV(knob_position, knob_radius, BLUE);
+}
+
+void button_widget(Ui_Rect r, Color c) {
+  float rw = r.w;
+  float rh = r.h;
+  float rx = r.x;
+  float ry = r.y;
+
+  Vector2 button_position = {r.w/2, r.h/2};
+  float button_radius = rh * 0.1f;
+
+  if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+    Vector2 mouse_position = GetMousePosition();
+    if (CheckCollisionPointCircle(GetMousePosition(), button_position, button_radius)) {
+      c = ColorBrightness(c, 0.75f);
+    }
+  }
+
+  DrawCircleV(button_position, button_radius, c);
+}
+
+typedef struct {
+  float data_buf[1024];
+} SignalState;
+
+void signal_widget(Ui_Rect r, SignalState *signal_state) {
+  for (size_t i = 0; i < 1024; ++i) {
+    signal_state->data_buf[i] = sinf(fmod((2*M_PI*440*i/48000.0f), 2.0*M_PI));
+  }
 }
 
 int main(void) {
@@ -197,14 +226,14 @@ int main(void) {
     ClearBackground(BLACK);
     layout_stack_push(&ls, LO_VERT, ui_rect(0, 0, w, h), 3, 0);
     layout_stack_push(&ls, LO_HORZ, layout_stack_slot(&ls), 2, 0);
-    widget(layout_stack_slot(&ls), RED);
-    widget(layout_stack_slot(&ls), PURPLE);
+        button_widget(layout_stack_slot(&ls), PINK);
+        widget(layout_stack_slot(&ls), PURPLE);
     layout_stack_pop(&ls);
-    widget(layout_stack_slot(&ls), BLUE);
+        widget(layout_stack_slot(&ls), BLUE);
     layout_stack_push(&ls, LO_HORZ, layout_stack_slot(&ls), 3, 0);
-    slider_widget(layout_stack_slot(&ls), &slider_vol);
+        slider_widget(layout_stack_slot(&ls), &slider_vol);
     widget(layout_stack_slot(&ls), PINK);
-    slider_widget(layout_stack_slot(&ls), &slider_freq);
+        slider_widget(layout_stack_slot(&ls), &slider_freq);
     layout_stack_pop(&ls);
     layout_stack_pop(&ls);
     EndDrawing();
