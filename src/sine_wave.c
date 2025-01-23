@@ -221,6 +221,50 @@ void signal_widget(Ui_Rect r, RayOutBuffer *ray_out_buffer, Color c)
   }
 }
 
+typedef struct ADSR {
+  SliderState attack;
+  SliderState decay;
+  SliderState sustain;
+  SliderState release;
+} ADSR;
+
+void adsr_display_widget(Ui_Rect rect, ADSR *adsr, Color c) {
+  float x = rect.x;
+  float y = rect.y;
+  float w = rect.w;
+  float h = rect.h;
+  float sum = adsr->attack.scroll + adsr->decay.scroll + 0.5f + adsr->release.scroll;;
+  float al  = adsr->attack.scroll / sum;
+  float dl  = adsr->decay.scroll/sum;
+  float sl  = 0.5 / sum;
+  float rl  = adsr->release.scroll / sum;
+  float s   = adsr->sustain.scroll;
+  Vector2 p0 = {0.0f + x         , 1.0f * h + y};
+  Vector2 p1 = {al *w + x        , 0.0f + y };
+  Vector2 p2 = {(al+dl)*w + x    , (1.0f - s)*h + y};
+  Vector2 p3 = {(al+dl+sl)*w + x , (1.0f - s)*h + y};
+  Vector2 p4 = {1.0f*w + x       , 1.0f*h + y};
+  DrawLineV(p0, p1, c);
+  DrawLineV(p1, p2, c);
+  DrawLineV(p2, p3, c);
+  DrawLineV(p3, p4, c);
+  DrawLineV(p0, p4, WHITE);
+}
+
+void adsr_widget(Ui_Rect rect, ADSR *adsr)
+{
+  Layout_Stack ls = {0};
+  layout_stack_push(&ls, LO_VERT, rect, 2, 0);
+  adsr_display_widget(layout_stack_slot(&ls), adsr, BLUE);
+  layout_stack_push(&ls, LO_HORZ, rect, 4, 0);
+  slider_widget(layout_stack_slot(&ls), &(adsr->attack));
+  slider_widget(layout_stack_slot(&ls), &(adsr->decay));
+  slider_widget(layout_stack_slot(&ls), &(adsr->sustain));
+  slider_widget(layout_stack_slot(&ls), &(adsr->release));
+  layout_stack_pop(&ls);
+  layout_stack_pop(&ls);
+}
+
 typedef struct {
   float freq;
   float vol;
@@ -262,6 +306,8 @@ int main(void) {
   Tone tone = {
     .current_vol = 0.0f,
   };
+
+  ADSR adsr = {{.scroll=0.05f},{.scroll=0.25f},{.scroll=0.3f},{.scroll=0.2}};
 
   while(!WindowShouldClose()) {
     size_t num_bytes = jack_ringbuffer_read_space(jack_stuff->ringbuffer_audio);
@@ -307,7 +353,7 @@ int main(void) {
       signal_widget(layout_stack_slot(&ls), &ray_out_buffer, BLUE);
       layout_stack_push(&ls, LO_HORZ, layout_stack_slot(&ls), 3, 0);
       slider_widget(layout_stack_slot(&ls), &slider_vol);
-      widget(layout_stack_slot(&ls), BLACK);
+      adsr_widget(layout_stack_slot(&ls), &adsr);
       slider_widget(layout_stack_slot(&ls), &slider_freq);
       layout_stack_pop(&ls);
       layout_stack_pop(&ls);
