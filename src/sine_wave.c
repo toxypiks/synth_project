@@ -214,6 +214,23 @@ void signal_widget(Ui_Rect r, RayOutBuffer *ray_out_buffer, Color c) {
   }
 }
 
+typedef struct {
+  float freq;
+  float vol;
+} Text;
+
+void text_widget(Ui_Rect r, Text *text)
+{
+  float rw = r.w;
+  float rh = r.h;
+  float rx = r.x;
+  float ry = r.y;
+
+  char buffer[256];
+  snprintf(buffer, sizeof(buffer), "Volume: %f  Frequency: %f", text->vol, text->freq);
+  DrawText(buffer, 0, 0, rh*0.1, WHITE);
+}
+
 int main(void) {
   JackStuff* jack_stuff = create_jack_stuff("SineWaveWithJack", 192000);
   float data_buf[1024];
@@ -235,16 +252,18 @@ int main(void) {
   SliderState slider_freq = {0};
   slider_freq.scroll = 0.0f;
 
-  float freq = 50.0f;
-  float vol = 1.0f;
+  Text text = {
+    .freq = 50.f,
+    .vol = 1.0f
+  };
 
   while(!WindowShouldClose()) {
     size_t num_bytes = jack_ringbuffer_read_space(jack_stuff->ringbuffer_audio);
     if(num_bytes < 48000 * sizeof(float)) {
-      freq = 50.0 + 1000.0 * slider_freq.scroll;
-      change_frequency(&osc, freq);
-      vol = 1.0 * slider_vol.scroll;
-      change_amp(&osc, vol);
+      text.freq = 50.0 + 1000.0 * slider_freq.scroll;
+      change_frequency(&osc, text.freq);
+      text.vol = 1.0 * slider_vol.scroll;
+      change_amp(&osc, text.vol);
       gen_signal_in_buf(&osc,  data_buf, 1024);
       jack_ringbuffer_write(jack_stuff->ringbuffer_audio, (void *)data_buf, 1024*sizeof(float));
       jack_ringbuffer_write(jack_stuff->ringbuffer_video, (void *)data_buf, 1024*sizeof(float));
@@ -275,7 +294,7 @@ int main(void) {
       layout_stack_push(&ls, LO_VERT, ui_rect(0, 0, w, h), 3, 0);
       layout_stack_push(&ls, LO_HORZ, layout_stack_slot(&ls), 2, 0);
       button_widget(layout_stack_slot(&ls), PINK);
-      widget(layout_stack_slot(&ls), BLACK);
+      text_widget(layout_stack_slot(&ls), &text);
       layout_stack_pop(&ls);
       signal_widget(layout_stack_slot(&ls), &ray_out_buffer, BLUE);
       layout_stack_push(&ls, LO_HORZ, layout_stack_slot(&ls), 3, 0);
@@ -284,10 +303,6 @@ int main(void) {
       slider_widget(layout_stack_slot(&ls), &slider_freq);
       layout_stack_pop(&ls);
       layout_stack_pop(&ls);
-
-      char buffer[256];
-      snprintf(buffer, sizeof(buffer), "Volume: %f      Frequency: %f", vol, freq);
-      //DrawText(buffer, 0, 0, h*0.04, WHITE);
 
       EndDrawing();
       assert(ls.count == 0);
