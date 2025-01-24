@@ -121,7 +121,7 @@ void slider_widget(Ui_Rect r, SliderState *slider_state) {
 
 void start_button_widget(Ui_Rect r, Color c, bool *is_pressed)
 {
-  Vector2 button_position = {r.w/2, r.h/2};
+  Vector2 button_position = {r.x + r.w/2, r.y + r.h/2};
   float button_radius = r.h * 0.1f;
   *is_pressed = false;
   if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
@@ -142,7 +142,7 @@ void start_button_widget(Ui_Rect r, Color c, bool *is_pressed)
 
 void reset_button_widget(Ui_Rect r, Color c, bool *is_pressed)
 {
-  Vector2 button_position = {r.w/2, r.h/2};
+  Vector2 button_position = {r.x + r.w/2, r.y + r.h/2};
   float button_radius = r.h * 0.1f;
   *is_pressed = false;
   if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
@@ -215,6 +215,8 @@ void adsr_widget(Ui_Rect rect, ADSR *adsr)
 void text_widget(Ui_Rect r, Text *text)
 {
   char buffer[256];
-  snprintf(buffer, sizeof(buffer), "Volume: %f           Frequency: %f", text->vol, text->freq);
+  snprintf(buffer, sizeof(buffer), "Volume: %f", text->vol);
   DrawText(buffer, r.x, r.y, r.h*0.1, WHITE);
+  snprintf(buffer, sizeof(buffer), "Frequency: %f", text->freq);
+  DrawText(buffer, r.x, r.y + r.h/5, r.h*0.1, WHITE);
 }
