@@ -159,21 +159,6 @@ target_link_libraries(consumer_producer_sine_wave_jack
   oscillator
   )
 
-set(SINE_WAVE_UI_SRC
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/sine_wave_ui.c
-  )
-
-add_executable(sine_wave_ui)
-target_sources(sine_wave_ui
- PRIVATE
-  ${SINE_WAVE_UI_SRC}
-  )
-
-target_link_libraries(sine_wave_ui
-  ${RAYLIB}
-  oscillator
-  )
-
 set(UI_STUFF_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/src/ui_stuff.c
   ${CMAKE_CURRENT_SOURCE_DIR}/include/ui_stuff.h
@@ -193,4 +178,20 @@ target_include_directories(ui_stuff
 target_link_libraries(ui_stuff
   ${RAYLIB}
   ray_out_buffer
+  )
+
+set(SINE_WAVE_UI_SRC
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/sine_wave_ui.c
+  )
+
+add_executable(sine_wave_ui)
+target_sources(sine_wave_ui
+ PRIVATE
+  ${SINE_WAVE_UI_SRC}
+  )
+
+target_link_libraries(sine_wave_ui
+  ${RAYLIB}
+  oscillator
+  ui_stuff
   )
