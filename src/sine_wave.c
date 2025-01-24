@@ -94,6 +94,13 @@ int main(void) {
       assert(ls.count == 0);
 
       tone.current_vol =  is_play_pressed ? 1.0 : 0.0;
+
+      if(is_reset_pressed) {
+        adsr.attack.scroll = 0.05f;
+        adsr.decay.scroll = 0.25f;
+        adsr.sustain.scroll = 0.3f;
+        adsr.release.scroll = 0.2;
+      }
     }
   }
   CloseWindow();
