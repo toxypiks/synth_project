@@ -1,7 +1,4 @@
 #include <stdio.h>
-#include <raylib.h>
-#include <raymath.h>
-#include <math.h>
 #include <jack/ringbuffer.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -74,13 +71,15 @@ int main(void) {
       float h = GetRenderHeight();
 
       bool is_play_pressed = false;
+      bool is_reset_pressed = false;
 
       BeginDrawing();
       ClearBackground(BLACK);
 
       layout_stack_push(&ls, LO_VERT, ui_rect(0, 0, w, h), 3, 0);
       layout_stack_push(&ls, LO_HORZ, layout_stack_slot(&ls), 2, 0);
-      button_widget(layout_stack_slot(&ls), PINK, &is_play_pressed);
+      reset_button_widget(layout_stack_slot(&ls), PINK, &is_reset_pressed);
+      // start_button_widget(layout_stack_slot(&ls), PINK, &is_play_pressed);
       text_widget(layout_stack_slot(&ls), &text);
       layout_stack_pop(&ls);
       signal_widget(layout_stack_slot(&ls), &ray_out_buffer, BLUE);

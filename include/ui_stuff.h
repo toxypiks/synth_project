@@ -81,7 +81,8 @@ void layout_stack_push(Layout_Stack *ls, Layout_Orient orient, Ui_Rect rect, siz
 
 void widget(Ui_Rect r, Color c);
 void slider_widget(Ui_Rect r, SliderState *slider_state);
-void button_widget(Ui_Rect r, Color c, bool *is_pressed);
+void start_button_widget(Ui_Rect r, Color c, bool *is_pressed);
+void reset_button_widget(Ui_Rect r, Color c, bool *is_pressed);
 void signal_widget(Ui_Rect r, RayOutBuffer *ray_out_buffer, Color c);
 void adsr_display_widget(Ui_Rect rect, ADSR *adsr, Color c);
 void adsr_widget(Ui_Rect rect, ADSR *adsr);

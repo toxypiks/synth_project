@@ -119,7 +119,7 @@ void slider_widget(Ui_Rect r, SliderState *slider_state) {
   DrawCircleV(knob_position, knob_radius, BLUE);
 }
 
-void button_widget(Ui_Rect r, Color c, bool *is_pressed)
+void start_button_widget(Ui_Rect r, Color c, bool *is_pressed)
 {
   Vector2 button_position = {r.w/2, r.h/2};
   float button_radius = r.h * 0.1f;
@@ -138,6 +138,26 @@ void button_widget(Ui_Rect r, Color c, bool *is_pressed)
   Vector2 v2 = {button_position.x - button_radius * 0.2, button_position.y-button_radius * 0.35};
   Vector2 v3 = {button_position.x - button_radius * 0.2, button_position.y+button_radius * 0.35};
   DrawTriangle(v1, v2, v3, c);
+}
+
+void reset_button_widget(Ui_Rect r, Color c, bool *is_pressed)
+{
+  Vector2 button_position = {r.w/2, r.h/2};
+  float button_radius = r.h * 0.1f;
+  *is_pressed = false;
+  if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+    Vector2 mouse_position = GetMousePosition();
+    if (CheckCollisionPointCircle(GetMousePosition(), button_position, button_radius)) {
+      c = ColorBrightness(c, 0.75f);
+      *is_pressed = true;
+    }
+  }
+
+  DrawCircleV(button_position, button_radius, c);
+  DrawCircleV(button_position, button_radius * 0.95, BLACK);
+  const char *text = "Reset";
+  float font_size = 4.0f;
+  DrawText(text, button_position.x - button_radius*0.7, button_position.y - button_radius*0.2, 12, c);
 }
 
 void signal_widget(Ui_Rect r, RayOutBuffer *ray_out_buffer, Color c)
