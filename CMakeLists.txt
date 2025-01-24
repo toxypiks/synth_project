@@ -92,6 +92,7 @@ target_link_libraries(sine_wave
   oscillator
   ray_out_buffer
   jack_stuff
+  ui_stuff
   )
 
 set(SINGLE_THREAD_EX_SRC
@@ -171,4 +172,25 @@ target_sources(sine_wave_ui
 target_link_libraries(sine_wave_ui
   ${RAYLIB}
   oscillator
+  )
+
+set(UI_STUFF_SOURCES
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/ui_stuff.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/ui_stuff.h
+  )
+
+add_library(ui_stuff)
+target_sources(ui_stuff
+ PRIVATE
+  ${UI_STUFF_SOURCES}
+  )
+
+target_include_directories(ui_stuff
+ PRIVATE
+ ${INCLUDE}
+ )
+
+target_link_libraries(ui_stuff
+  ${RAYLIB}
+  ray_out_buffer
   )
