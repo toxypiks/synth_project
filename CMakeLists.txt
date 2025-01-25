@@ -69,6 +69,22 @@ target_link_libraries(jack_stuff
   ${JACK_LIBRARIES}
   )
 
+set(ENVELOP_SOURCES
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/envelop.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/envelop.h
+  )
+
+add_library(envelop)
+target_sources(envelop
+ PRIVATE
+  ${ENVELOP_SOURCES}
+  )
+
+target_include_directories(envelop
+ PRIVATE
+ ${INCLUDE}
+ )
+
 set(SINE_WAVE_SRC
   ${CMAKE_CURRENT_SOURCE_DIR}/src/sine_wave.c
   )
