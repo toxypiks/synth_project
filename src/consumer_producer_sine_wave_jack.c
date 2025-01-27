@@ -5,6 +5,7 @@
 #include <jack/ringbuffer.h>
 #include "jack_stuff.h"
 #include "oscillator.h"
+#include "envelop.h"
 
 typedef struct ThreadStuff{
   size_t index;
@@ -46,7 +47,9 @@ void* gen_data_thread_fct(void* thread_stuff_raw) {
     if(num_bytes > 1024 * sizeof(float)) {
           usleep(46800); // 0.01 sec
     } else {
-      gen_signal_in_buf(&thread_stuff->osc, cache_buf, 1024);
+      Envelop adsr_envelop = {0};
+      adsr_envelop.envelop_state = PRESSED;
+      gen_signal_in_buf(&thread_stuff->osc, cache_buf, 1024, &adsr_envelop);
       //memcopy from buffer -> ringbuffer
       jack_ringbuffer_write(
         thread_stuff->ringbuffer_audio,

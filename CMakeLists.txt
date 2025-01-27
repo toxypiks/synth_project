@@ -12,6 +12,22 @@ find_package(raylib)
 
 find_package(Jack REQUIRED)
 
+set(ENVELOP_SOURCES
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/envelop.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/envelop.h
+  )
+
+add_library(envelop)
+target_sources(envelop
+ PRIVATE
+  ${ENVELOP_SOURCES}
+  )
+
+target_include_directories(envelop
+ PRIVATE
+ ${INCLUDE}
+ )
+
 set(OSCILLATOR_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/src/oscillator.c
   ${CMAKE_CURRENT_SOURCE_DIR}/include/oscillator.h
@@ -31,6 +47,7 @@ target_include_directories(oscillator
 target_link_libraries(oscillator
   ${raylib_LIBRARIES}
   m
+  envelop
   )
 
 set(RAY_OUT_BUFFER_SOURCES
@@ -68,22 +85,6 @@ target_include_directories(jack_stuff
 target_link_libraries(jack_stuff
   ${JACK_LIBRARIES}
   )
-
-set(ENVELOP_SOURCES
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/envelop.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/include/envelop.h
-  )
-
-add_library(envelop)
-target_sources(envelop
- PRIVATE
-  ${ENVELOP_SOURCES}
-  )
-
-target_include_directories(envelop
- PRIVATE
- ${INCLUDE}
- )
 
 set(SINE_WAVE_SRC
   ${CMAKE_CURRENT_SOURCE_DIR}/src/sine_wave.c
@@ -158,6 +159,7 @@ target_sources(consumer_producer_sine_wave
 target_link_libraries(consumer_producer_sine_wave
   ${JACK_LIBRARIES}
   oscillator
+  envelop
   )
 
 set(CONSUMER_PRODUCER_SINE_WAVE_JACK_SRC
@@ -173,6 +175,7 @@ target_sources(consumer_producer_sine_wave_jack
 target_link_libraries(consumer_producer_sine_wave_jack
   ${JACK_LIBRARIES}
   oscillator
+  envelop
   )
 
 set(UI_STUFF_SOURCES
