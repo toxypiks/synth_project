@@ -103,16 +103,10 @@ int main(void) {
       // program logic - controller part
       // TODO: signal state via ringbuffer
       adsr_envelop.attack  = adsr.attack.scroll;
-      // adsr_envelop.decay   = adsr.decay.scroll;
-      // adsr_envelop.sustain = adsr.sustain.scroll;
+      adsr_envelop.decay   = adsr.decay.scroll;
+      adsr_envelop.sustain = adsr.sustain.scroll;
       adsr_envelop.release = adsr.release.scroll;
-      if(is_play_pressed) {
-        adsr_envelop.envelop_state = PRESSED;
-      } else {
-        if(adsr_envelop.envelop_state == PRESSED){
-          adsr_envelop.envelop_state = RELEASED;
-        }
-      }
+      envelop_trigger(&adsr_envelop,is_play_pressed);
     }
   }
   CloseWindow();

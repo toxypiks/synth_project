@@ -48,7 +48,7 @@ void* gen_data_thread_fct(void* thread_stuff_raw) {
           usleep(46800); // 0.01 sec
     } else {
       Envelop adsr_envelop = {0};
-      adsr_envelop.envelop_state = PRESSED;
+      adsr_envelop.envelop_state = PRESSED_ATTACK;
       gen_signal_in_buf(&thread_stuff->osc, cache_buf, 1024, &adsr_envelop);
       //memcopy from buffer -> ringbuffer
       jack_ringbuffer_write(

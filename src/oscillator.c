@@ -1,5 +1,6 @@
 #include "oscillator.h"
 #include <math.h>
+#include "envelop.h"
 
 void change_frequency(Oscillator* osc, float new_freq)
 {
