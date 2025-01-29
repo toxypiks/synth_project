@@ -94,6 +94,9 @@ void slider_widget(Ui_Rect r, SliderState *slider_state) {
                            position_bar.y + size_bar.y * 0.5};
   float knob_radius = rh * 0.035;
   Color knob_color = BLUE;
+  Color low_color = {0xFF, 0x00, 0xFF, 0xFF};
+  Color high_color = {0x00, 0x00, 0xFF, 0xFF};
+  high_color.a = floorf(255.f*slider_state->scroll);
 
   if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
     Vector2 mouse_position = GetMousePosition();
@@ -109,14 +112,16 @@ void slider_widget(Ui_Rect r, SliderState *slider_state) {
 
   if (slider_state->scroll_dragging) {
     float x = GetMousePosition().x;
-    if (x < position_bar.x)
+    if (x < position_bar.x) {
       x = position_bar.x;
-    if (x > position_bar.x + size_bar.x)
+    }
+    if (x > position_bar.x + size_bar.x) {
       x = position_bar.x + size_bar.x;
+    }
     slider_state->scroll = (x - position_bar.x) / size_bar.x;
   }
 
-  DrawRectangleV(position_bar, size_bar, WHITE);
+  DrawRectangleV(position_bar, size_bar, ColorAlphaBlend(low_color, high_color, WHITE));
   DrawCircleV(knob_position, knob_radius, knob_color);
 }
 
