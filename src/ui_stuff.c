@@ -88,17 +88,18 @@ void slider_widget(Ui_Rect r, SliderState *slider_state) {
   float scale = rh * 0.01;
   float pad = rh * 0.05;
 
-  Vector2 size_bar = {rw * 0.8, rh * 0.02};
+  Vector2 size_bar = {rw * 0.8, rh * 0.01};
   Vector2 position_bar = {rx + 0.1 * rw, ry + 0.5 * rh + pad};
   Vector2 knob_position = {rx + 0.1 * rw + (size_bar.x * slider_state->scroll),
                            position_bar.y + size_bar.y * 0.5};
-  float knob_radius = rh * 0.05;
+  float knob_radius = rh * 0.035;
+  Color knob_color = BLUE;
 
-  if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+  if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
     Vector2 mouse_position = GetMousePosition();
     if (Vector2Distance(mouse_position, knob_position) <= knob_radius) {
       slider_state->scroll_dragging = true;
-      printf("YEAH\n");
+      knob_color = ColorBrightness(knob_color, 0.5f);
     }
   }
 
@@ -116,7 +117,7 @@ void slider_widget(Ui_Rect r, SliderState *slider_state) {
   }
 
   DrawRectangleV(position_bar, size_bar, WHITE);
-  DrawCircleV(knob_position, knob_radius, BLUE);
+  DrawCircleV(knob_position, knob_radius, knob_color);
 }
 
 void start_button_widget(Ui_Rect r, Color c, bool *is_pressed)
