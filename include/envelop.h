@@ -14,6 +14,7 @@ typedef enum EnvelopState {
 typedef struct Envelop {
   EnvelopState envelop_state;
   size_t sample_count;
+  size_t sample_count_release;
   float current_value;
 
   float attack;

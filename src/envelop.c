@@ -15,6 +15,8 @@ void envelop_trigger(Envelop *envelop, bool is_pressed)
 {
   if(is_pressed && (envelop->envelop_state == RELEASED || envelop->envelop_state == DEFAULT)) {
     envelop->envelop_state = PRESSED_ATTACK;
+    envelop->sample_count = 0;
+
     return;
   }
   if(!is_pressed && envelop->envelop_state != DEFAULT) {
@@ -43,7 +45,6 @@ void envelop_apply_in_buf(Envelop *envelop, float* buf, size_t buf_length)
   float sustain_step_size = 0.0f;
   float release_step_size = -1.0f/(48000.0f * envelop->release);
 
-
   float step_size[4] = {attack_step_size, decay_step_size, sustain_step_size, release_step_size};
   float current_value = 0.0f;
   if(envelop->envelop_state == PRESSED_ATTACK
@@ -65,15 +66,25 @@ void envelop_apply_in_buf(Envelop *envelop, float* buf, size_t buf_length)
         buf[i] = current_value * buf[i];
         step++;
       }
+    envelop->sample_count += buf_length;
   } else if(envelop->envelop_state == RELEASED) {
       for(size_t i = 0; i < buf_length; i++) {
         current_value = MAX((i * release_step_size + envelop->current_value), 0.0f);
         buf[i] = current_value * buf[i];
+        if(current_value <= 0.00000001f) {
+          envelop->envelop_state = DEFAULT;
+          envelop->sample_count = 0;
+          envelop->sample_count_release = 0;
+        } else {
+          envelop->sample_count += 1;
+          envelop->sample_count_release += 1;
+        }
       }
   } else {
     for(size_t i = 0; i < buf_length; i++) {
-        buf[i] = 0.0f;
-      }
+      buf[i] = 0.0f;
+    }
+
   }
   envelop->current_value = current_value;
 }

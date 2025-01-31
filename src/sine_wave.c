@@ -37,7 +37,7 @@ int main(void) {
     .vol = 1.0f
   };
 
-  ADSR adsr = {{.scroll=0.05f},{.scroll=0.25f},{.scroll=0.3f},{.scroll=0.2}};
+  ADSR adsr = {{.scroll=0.05f},{.scroll=0.25f},{.scroll=0.5f},{.scroll=0.2}};
 
   while(!WindowShouldClose()) {
     size_t num_bytes = jack_ringbuffer_read_space(jack_stuff->ringbuffer_audio);
@@ -47,6 +47,25 @@ int main(void) {
       text.vol = 1.0 * slider_vol.scroll;
       change_amp(&osc, text.vol);
       gen_signal_in_buf(&osc,  data_buf, 1024, &adsr_envelop);
+
+      // adsr x,y0,y1 values
+      float adsr_height = adsr_envelop.current_value;
+      float sum_ads = 48000.0f *(adsr_envelop.attack + adsr_envelop.decay + 0.5);
+      float sum_adsr = 48000.0f *(adsr_envelop.attack + adsr_envelop.decay + 0.5 + adsr_envelop.release);
+      float adsr_length = 0;
+      if((adsr_envelop.sample_count < sum_ads) && (adsr_envelop.envelop_state ==  PRESSED_ATTACK
+                                           || adsr_envelop.envelop_state == PRESSED_DECAY
+                                           || adsr_envelop.envelop_state == PRESSED_SUSTAIN)){
+        adsr_length = adsr_envelop.sample_count/sum_adsr;
+      } else if ((adsr_envelop.sample_count > sum_adsr) && adsr_envelop.envelop_state ==  PRESSED_ATTACK
+                                           || adsr_envelop.envelop_state == PRESSED_DECAY
+                                           || adsr_envelop.envelop_state == PRESSED_SUSTAIN) {
+        adsr_length = (sum_ads/sum_adsr);
+      } else if (adsr_envelop.envelop_state == RELEASED) {
+        adsr_length =  adsr_envelop.attack + adsr_envelop.decay + 0.5 + (adsr_envelop.sample_count_release / (48000.0f * adsr_envelop.release));
+
+      }
+
       jack_ringbuffer_write(jack_stuff->ringbuffer_audio, (void *)data_buf, 1024*sizeof(float));
       jack_ringbuffer_write(jack_stuff->ringbuffer_video, (void *)data_buf, 1024*sizeof(float));
 
@@ -83,7 +102,7 @@ int main(void) {
       signal_widget(layout_stack_slot(&ls), &ray_out_buffer, BLUE);
       layout_stack_push(&ls, LO_HORZ, layout_stack_slot(&ls), 3, 0);
       slider_widget(layout_stack_slot(&ls), &slider_vol);
-      adsr_widget(layout_stack_slot(&ls), &adsr);
+      adsr_widget(layout_stack_slot(&ls), &adsr, adsr_height, adsr_length);
       slider_widget(layout_stack_slot(&ls), &slider_freq);
       layout_stack_pop(&ls);
       layout_stack_pop(&ls);
@@ -96,7 +115,7 @@ int main(void) {
       if(is_reset_pressed) {
         adsr.attack.scroll = 0.05f;
         adsr.decay.scroll = 0.25f;
-        adsr.sustain.scroll = 0.3f;
+        adsr.sustain.scroll = 0.5f;
         adsr.release.scroll = 0.2;
       }
 

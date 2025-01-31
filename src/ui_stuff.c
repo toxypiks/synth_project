@@ -181,15 +181,15 @@ void signal_widget(Ui_Rect r, RayOutBuffer *ray_out_buffer, Color c)
   }
 }
 
-void adsr_display_widget(Ui_Rect rect, ADSR *adsr, Color c) {
+void adsr_display_widget(Ui_Rect rect, ADSR *adsr, Color c, float adsr_height, float adsr_width) {
   float x = rect.x;
   float y = rect.y;
   float w = rect.w;
   float h = rect.h;
-  float sum = adsr->attack.scroll + adsr->decay.scroll + 0.5f + adsr->release.scroll;;
+  float sum = adsr->attack.scroll + adsr->decay.scroll + adsr->sustain.scroll + adsr->release.scroll;
   float al  = adsr->attack.scroll / sum;
   float dl  = adsr->decay.scroll/sum;
-  float sl  = 0.5 / sum;
+  float sl  = adsr->sustain.scroll / sum;
   float rl  = adsr->release.scroll / sum;
   float s   = adsr->sustain.scroll;
   Vector2 p0 = {0.0f + x         , 1.0f * h + y};
@@ -202,13 +202,17 @@ void adsr_display_widget(Ui_Rect rect, ADSR *adsr, Color c) {
   DrawLineV(p2, p3, c);
   DrawLineV(p3, p4, c);
   DrawLineV(p0, p4, WHITE);
+
+  Vector2 progess_p0 = {adsr_width * w + x, 1.0f*h + y};
+  Vector2 progess_p1 = {adsr_width * w + x, (1 - adsr_height) * h + y};
+  DrawLineV(progess_p0, progess_p1, WHITE);
 }
 
-void adsr_widget(Ui_Rect rect, ADSR *adsr)
+void adsr_widget(Ui_Rect rect, ADSR *adsr, float adsr_height, float adsr_width)
 {
   Layout_Stack ls = {0};
   layout_stack_push(&ls, LO_VERT, rect, 2, 0);
-  adsr_display_widget(layout_stack_slot(&ls), adsr, BLUE);
+  adsr_display_widget(layout_stack_slot(&ls), adsr, BLUE, adsr_height, adsr_width);
   layout_stack_push(&ls, LO_HORZ, rect, 4, 0);
   slider_widget(layout_stack_slot(&ls), &(adsr->attack));
   slider_widget(layout_stack_slot(&ls), &(adsr->decay));
