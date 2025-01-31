@@ -214,3 +214,17 @@ target_link_libraries(sine_wave_ui
   oscillator
   ui_stuff
   )
+
+set(SIMPLE_EXAMPLE_FFMPEG_SRC
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/simple_example_ffmpeg.c
+  )
+
+add_executable(simple_example_ffmpeg)
+target_sources(simple_example_ffmpeg
+ PRIVATE
+  ${SIMPLE_EXAMPLE_FFMPEG_SRC}
+  )
+
+target_link_libraries(simple_example_ffmpeg
+  ${raylib_LIBRARIES}
+  )
