@@ -7,7 +7,16 @@
   - output on GUI via Raylib
   - controlling with GUI elements (slider, buttons)
 - purpose is learning interaction between GUI and a synth engine
-  - apply concepts like Model View Controller
+
+# TODO
+ - apply concepts like Model View Controller
+
+# Ideas
+ - hot code reload to comfortable edit UI
+ - generate video of UI using ffmpeg
+ - light saber effect for adsr progress function
+
+# Usage
 
 - plot sine wave data from `consumer_producer_sine_wave` script:
 ```
