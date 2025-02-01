@@ -15,18 +15,18 @@ int ffmpeg_start_rendering(size_t width, size_t height, size_t fps)
 
   if (pipe(pipefd) < 0) {
     fprintf(stderr, "ERROR: could not create pipe: %s\n", strerror(errno));
-    return -1;
+    return 1;
   }
 
   pid_t child = fork();
   if (child < 0) {
     fprintf(stderr, "ERROR: could not fork a child: %s\n", strerror(errno));
-    return -1;
+    return 1;
   }
   if (child == 0) {
     if (dup2(pipefd[READ_END], STDIN_FILENO) < 0) {
       fprintf(stderr, "ERROR: could not reopen read end of pipe as stdin: %s\n", strerror(errno));
-      return -1;
+      return 1;
     }
     close(pipefd[WRITE_END]);
 
@@ -48,7 +48,7 @@ int ffmpeg_start_rendering(size_t width, size_t height, size_t fps)
                      "-i", "-",
                      "-c:v", "libx264",
 
-                     "../output_video/output_video_simple_example.mp4",
+                     "../output_video/output_video_sine_wave.mp4",
                      NULL
       );
     if (ret < 0) {
@@ -66,4 +66,11 @@ void ffmpeg_end_rendering(int pipe)
 {
   close(pipe);
   wait(NULL);
+}
+
+void ffmpeg_send_frame(int pipe, void *data, size_t width, size_t height)
+{
+    for (size_t y = height; y > 0; --y) {
+        write(pipe, (uint32_t*)data + (y - 1)*width, sizeof(uint32_t)*width);
+    }
 }

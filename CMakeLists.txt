@@ -110,10 +110,11 @@ target_link_libraries(sine_wave
   ray_out_buffer
   jack_stuff
   ui_stuff
+  ffmpeg_stuff
   )
 
 set(SINGLE_THREAD_EX_SRC
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/single_thread_example.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_scripts/single_thread_example.c
   )
 
 add_executable(single_thread_example)
@@ -123,7 +124,7 @@ target_sources(single_thread_example
   )
 
 set(CONSUMER_PRODUCER1_SRC
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/consumer_producer1.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_scripts/consumer_producer1.c
   )
 
 add_executable(consumer_producer1)
@@ -133,7 +134,7 @@ target_sources(consumer_producer1
   )
 
 set(CONSUMER_PRODUCER_WITH_BUF_SRC
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/consumer_producer_with_buf.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_scripts/consumer_producer_with_buf.c
   )
 
 add_executable(consumer_producer_with_buf)
@@ -147,7 +148,7 @@ ${JACK_LIBRARIES}
 )
 
 set(CONSUMER_PRODUCER_SINE_WAVE_SRC
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/consumer_producer_sine_wave.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_scripts/consumer_producer_sine_wave.c
   )
 
 add_executable(consumer_producer_sine_wave)
@@ -163,7 +164,7 @@ target_link_libraries(consumer_producer_sine_wave
   )
 
 set(CONSUMER_PRODUCER_SINE_WAVE_JACK_SRC
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/consumer_producer_sine_wave_jack.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_scripts/consumer_producer_sine_wave_jack.c
   )
 
 add_executable(consumer_producer_sine_wave_jack)
@@ -200,7 +201,7 @@ target_link_libraries(ui_stuff
   )
 
 set(SINE_WAVE_UI_SRC
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/sine_wave_ui.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_scripts/sine_wave_ui.c
   )
 
 add_executable(sine_wave_ui)
@@ -216,7 +217,7 @@ target_link_libraries(sine_wave_ui
   )
 
 set(SIMPLE_EXAMPLE_FFMPEG_SRC
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/simple_example_ffmpeg.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_scripts/simple_example_ffmpeg.c
   )
 
 add_executable(simple_example_ffmpeg)
@@ -244,3 +245,7 @@ target_include_directories(ffmpeg_stuff
  PRIVATE
  ${INCLUDE}
  )
+
+target_link_libraries(ffmpeg_stuff
+  ${RAYLIB}
+  )
