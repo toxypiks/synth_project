@@ -79,6 +79,8 @@ int main (void)
   InitWindow(WIDTH, HEIGHT, "Raylib + FFmpeg");
   SetTargetFPS(60);
 
+  RenderTexture2D screen = LoadRenderTexture(WIDTH, HEIGHT);
+
   for (size_t i = 0; i < FPS*duration && !WindowShouldClose(); ++i) {
     BeginDrawing();
     float nx = x + dx*dt;
@@ -94,12 +96,15 @@ int main (void)
       dy = -dy;
     }
 
-    ClearBackground(*(Color*)(uint32_t[1]){0xFF181818});
-
-    DrawCircle(x, y, r, *(Color*)(uint32_t[1]){0xFF0000FF});
+    BeginDrawing();
+        BeginTextureMode(screen);
+            ClearBackground(*(Color*)(uint32_t[1]){0xFF181818});
+            DrawCircle(x, y, r, *(Color*)(uint32_t[1]){0xFF0000FF});
+        EndTextureMode();
+        DrawTexture(screen.texture, 0, 0, WHITE);
     EndDrawing();
 
-    Image image = LoadImageFromScreen();
+    Image image = LoadImageFromTexture(screen.texture);
     write(pipefd[WRITE_END], image.data, sizeof(uint32_t)*WIDTH*HEIGHT);
     UnloadImage(image);
   }
