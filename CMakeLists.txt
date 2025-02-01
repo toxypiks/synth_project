@@ -228,3 +228,19 @@ target_sources(simple_example_ffmpeg
 target_link_libraries(simple_example_ffmpeg
   ${raylib_LIBRARIES}
   )
+
+set(FFMPEG_STUFF_SRC
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/ffmpeg_stuff.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/ffmpeg_stuff.h
+  )
+
+add_library(ffmpeg_stuff)
+target_sources(ffmpeg_stuff
+ PRIVATE
+  ${FFMPEG_STUFF_SRC}
+  )
+
+target_include_directories(ffmpeg_stuff
+ PRIVATE
+ ${INCLUDE}
+ )
