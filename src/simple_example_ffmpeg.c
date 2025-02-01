@@ -105,7 +105,10 @@ int main (void)
     EndDrawing();
 
     Image image = LoadImageFromTexture(screen.texture);
-    write(pipefd[WRITE_END], image.data, sizeof(uint32_t)*WIDTH*HEIGHT);
+    // flip image -> writing rows in reversed order
+    for (size_t y = HEIGHT; y > 0; --y) {
+      write(pipefd[WRITE_END], (uint32_t*)image.data + (y - 1)*WIDTH, sizeof(uint32_t)*WIDTH);
+    }
     UnloadImage(image);
   }
   CloseWindow();
