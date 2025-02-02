@@ -7,14 +7,14 @@
 typedef struct FfmpegStuff {
   RenderTexture2D screen;
   int fps;
-  int pipe;
+  int pipe[2];
 } FfmpegStuff;
 
 #define READ_END 0
 #define WRITE_END 1
 
-int ffmpeg_start_rendering(size_t width, size_t height, size_t fps);
-void ffmpeg_end_rendering(int pipe);
-void ffmpeg_send_frame(int pipe, void *data, size_t width, size_t height);
+int ffmpeg_start_rendering(FfmpegStuff *ffmpeg_stuff, size_t width, size_t height);
+void ffmpeg_end_rendering(FfmpegStuff *ffmpeg_stuff);
+void ffmpeg_send_frame(FfmpegStuff *ffmpeg_stuff, void *data, size_t width, size_t height);
 
 #endif // FFMPEG_H

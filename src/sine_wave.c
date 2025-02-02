@@ -8,20 +8,30 @@
 #include "ray_out_buffer.h"
 #include "jack_stuff.h"
 #include "ui_stuff.h"
+#include "ffmpeg_stuff.h"
 
 int main(void) {
   Envelop adsr_envelop = {0};
+  size_t window_factor = 80;
+  size_t screen_width = (16*window_factor);
+  size_t screen_height = (9*window_factor);
+
+  FfmpegStuff ffmpeg_stuff = {0};
+  ffmpeg_stuff.fps = 60;
 
   JackStuff* jack_stuff = create_jack_stuff("SineWaveWithJack", 192000);
   float data_buf[1024];
   Oscillator osc = {.amp = 1.0, .freq = 440, .phase = 0};
 
-  size_t window_factor = 80;
-  size_t screen_width = (16*window_factor);
-  size_t screen_height = (9*window_factor);
+  // init raylib stuff
   SetConfigFlags(FLAG_WINDOW_RESIZABLE);
   InitWindow(screen_width, screen_height, "sine_wave");
-  SetTargetFPS(60);
+  SetTargetFPS(ffmpeg_stuff.fps);
+
+  int ret = ffmpeg_start_rendering(&ffmpeg_stuff, screen_width, screen_height);
+  if (ret != 0) {
+    return -1;
+  }
 
   RayOutBuffer ray_out_buffer = create_ray_out_buffer(10000);
 
@@ -39,7 +49,10 @@ int main(void) {
 
   ADSR adsr = {{.scroll=0.05f},{.scroll=0.25f},{.scroll=0.5f},{.scroll=0.2}};
 
-  while(!WindowShouldClose()) {
+  int drawn_frames = 0;
+  while(!WindowShouldClose() && drawn_frames < 12000) {
+    printf("drawn_frames: %d\n",drawn_frames);
+    drawn_frames += 1;
     size_t num_bytes = jack_ringbuffer_read_space(jack_stuff->ringbuffer_audio);
     if(num_bytes < 48000 * sizeof(float)) {
       text.freq = 50.0 + 1000.0 * slider_freq.scroll;
@@ -91,24 +104,39 @@ int main(void) {
       bool is_reset_pressed = false;
 
       BeginDrawing();
-      ClearBackground(BLACK);
+        // TODO check record toggle on
+        BeginTextureMode(ffmpeg_stuff.screen);
+          ClearBackground(BLACK);
 
-      layout_stack_push(&ls, LO_VERT, ui_rect(0, 0, w, h), 3, 0);
-      layout_stack_push(&ls, LO_HORZ, layout_stack_slot(&ls), 3, 0);
-      start_button_widget(layout_stack_slot(&ls), PINK, &is_play_pressed);
-      reset_button_widget(layout_stack_slot(&ls), PINK, &is_reset_pressed);
-      text_widget(layout_stack_slot(&ls), &text);
-      layout_stack_pop(&ls);
-      signal_widget(layout_stack_slot(&ls), &ray_out_buffer, BLUE);
-      layout_stack_push(&ls, LO_HORZ, layout_stack_slot(&ls), 3, 0);
-      slider_widget(layout_stack_slot(&ls), &slider_vol);
-      adsr_widget(layout_stack_slot(&ls), &adsr, adsr_height, adsr_length);
-      slider_widget(layout_stack_slot(&ls), &slider_freq);
-      layout_stack_pop(&ls);
-      layout_stack_pop(&ls);
+          layout_stack_push(&ls, LO_VERT, ui_rect(0, 0, w, h), 3, 0);
+          layout_stack_push(&ls, LO_HORZ, layout_stack_slot(&ls), 3, 0);
+          start_button_widget(layout_stack_slot(&ls), PINK, &is_play_pressed);
+          reset_button_widget(layout_stack_slot(&ls), PINK, &is_reset_pressed);
+          text_widget(layout_stack_slot(&ls), &text);
+          layout_stack_pop(&ls);
+          signal_widget(layout_stack_slot(&ls), &ray_out_buffer, BLUE);
+          layout_stack_push(&ls, LO_HORZ, layout_stack_slot(&ls), 3, 0);
+          slider_widget(layout_stack_slot(&ls), &slider_vol);
+          adsr_widget(layout_stack_slot(&ls), &adsr, adsr_height, adsr_length);
+          slider_widget(layout_stack_slot(&ls), &slider_freq);
+          layout_stack_pop(&ls);
+          layout_stack_pop(&ls);
+        EndTextureMode();
 
+        Vector2 pos_rect = {0,0};
+        Rectangle flip_rect = {0, 0, screen_width, -1 * (int)screen_height};
+        DrawTextureRec(ffmpeg_stuff.screen.texture,
+                       flip_rect,
+                       pos_rect,
+                       WHITE);
       EndDrawing();
       assert(ls.count == 0);
+
+      Image image = LoadImageFromTexture(ffmpeg_stuff.screen.texture);
+      ffmpeg_send_frame(&ffmpeg_stuff, &image.data, screen_width, screen_height);
+      // TODO check if screen_width and screen_height could change <- window resizable
+
+      UnloadImage(image);
 
       //tone.current_vol =  is_play_pressed ? 1.0 : 0.0;
 
@@ -129,6 +157,7 @@ int main(void) {
     }
   }
   CloseWindow();
+  ffmpeg_end_rendering(&ffmpeg_stuff);
   jack_stuff_clear(jack_stuff);
   return 0;
 }
