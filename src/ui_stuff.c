@@ -203,9 +203,18 @@ void adsr_display_widget(Ui_Rect rect, ADSR *adsr, Color c, float adsr_height, f
   DrawLineV(p3, p4, c);
   DrawLineV(p0, p4, WHITE);
 
-  Vector2 progess_p0 = {adsr_width * w + x, 1.0f*h + y};
-  Vector2 progess_p1 = {adsr_width * w + x, (1 - adsr_height) * h + y};
-  DrawLineV(progess_p0, progess_p1, WHITE);
+  Vector2 progress_p0 = {adsr_width * w + x, 1.0f*h + y};
+  Vector2 progress_p1 = {adsr_width * w + x, (1 - adsr_height) * h + y};
+  float thick = w * 0.005f;
+  float surrounding = 2.5f * thick;
+  Rectangle rec = {
+    .x = progress_p0.x - surrounding,
+    .y = progress_p1.y - surrounding,
+    .width = 2.0 * surrounding,
+    .height = surrounding + progress_p0.y - progress_p1.y,
+  };
+  DrawRectangleRec(rec, PINK);
+  DrawLineEx(progress_p0, progress_p1, thick, BLUE);
 }
 
 void adsr_widget(Ui_Rect rect, ADSR *adsr, float adsr_height, float adsr_width)
