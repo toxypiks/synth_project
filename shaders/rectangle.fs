@@ -7,5 +7,7 @@ out vec4 finalColor;
 
 void main()
 {
-  finalColor = vec4(0, 1, 0, 1);
+  float x = fragTexCoord.x;
+  float y = fragTexCoord.y;
+  finalColor = vec4(x, y, 0, 1);
 }

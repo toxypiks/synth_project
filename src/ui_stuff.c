@@ -2,6 +2,7 @@
 #include "ray_out_buffer.h"
 #include <stdio.h>
 #include <assert.h>
+#include <rlgl.h>
 
 Ui_Rect ui_rect(float x, float y, float w, float h) {
   Ui_Rect r = {0};
@@ -212,12 +213,22 @@ void adsr_display_widget(Ui_Rect rect, ADSR *adsr, Color c, float adsr_height, f
   Rectangle rec = {
     .x = progress_p0.x - surrounding,
     .y = progress_p1.y - surrounding,
-    .width = 2.0 * surrounding,
+    .width = 2.0f * surrounding,
     .height = surrounding + progress_p0.y - progress_p1.y,
   };
 
+  Vector2 position_rec = {
+    .x = progress_p0.x - surrounding,
+    .y = progress_p1.y - surrounding,
+  };
+
+  Texture2D texture = { rlGetTextureIdDefault(), 1, 1, 1, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8};
+
   BeginShaderMode(rec_shader);
-  DrawRectangleRec(rec, PINK);
+
+  Rectangle source = {0.0f, 0.0f, 1.0f, 1.0f};
+  Vector2 origin = { 0.0f, 0.0f };
+  DrawTexturePro(texture, source, rec, origin, 0.0, PINK);
   EndShaderMode();
   DrawLineEx(progress_p0, progress_p1, thick, BLUE);
 }
