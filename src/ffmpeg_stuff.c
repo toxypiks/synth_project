@@ -11,7 +11,9 @@
 
 int ffmpeg_start_rendering(FfmpegStuff *ffmpeg_stuff, size_t width, size_t height)
 {
-
+  if(!ffmpeg_stuff->enable){
+    return 0;
+  }
   if (pipe(ffmpeg_stuff->pipe) < 0) {
     fprintf(stderr, "ERROR: could not create pipe: %s\n", strerror(errno));
     return 1;
@@ -61,13 +63,14 @@ int ffmpeg_start_rendering(FfmpegStuff *ffmpeg_stuff, size_t width, size_t heigh
   int ret = close(ffmpeg_stuff->pipe[READ_END]);
   ffmpeg_stuff->pipe[READ_END] = 0;
 
-  // raylib part
-  ffmpeg_stuff->screen = LoadRenderTexture(width, height);
   return 0;
 }
 
 void ffmpeg_end_rendering(FfmpegStuff *ffmpeg_stuff)
 {
+  if(!ffmpeg_stuff->enable) {
+    return;
+  }
   if(ffmpeg_stuff->pipe[READ_END] != 0) {
     close(ffmpeg_stuff->pipe[READ_END]);
   }
@@ -80,7 +83,11 @@ void ffmpeg_end_rendering(FfmpegStuff *ffmpeg_stuff)
 
 void ffmpeg_send_frame(FfmpegStuff *ffmpeg_stuff, void *data, size_t width, size_t height)
 {
-    for (size_t y = height; y > 0; --y) {
-        write(ffmpeg_stuff->pipe[WRITE_END], (uint32_t*)data + (y - 1)*width, sizeof(uint32_t)*width);
-    }
+  if(!ffmpeg_stuff->enable){
+    return;
+  }
+
+  for (size_t y = height; y > 0; --y) {
+    write(ffmpeg_stuff->pipe[WRITE_END], (uint32_t*)data + (y - 1)*width, sizeof(uint32_t)*width);
+  }
 }

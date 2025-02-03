@@ -17,6 +17,7 @@ int main(void) {
   size_t screen_height = (9*window_factor);
 
   FfmpegStuff ffmpeg_stuff = {0};
+  ffmpeg_stuff.enable = false;
   ffmpeg_stuff.fps = 60;
 
   printf("init jack stuff\n");
@@ -35,6 +36,7 @@ int main(void) {
   if (ret != 0) {
     return -1;
   }
+  ffmpeg_stuff.screen = LoadRenderTexture(screen_width, screen_height);
 
   RayOutBuffer ray_out_buffer = create_ray_out_buffer(10000);
 
@@ -56,10 +58,7 @@ int main(void) {
   float adsr_length = 0.0f;
   ADSR adsr = {{.scroll=0.05f},{.scroll=0.25f},{.scroll=0.5f},{.scroll=0.2}};
 
-  int drawn_frames = 0;
-  while(!WindowShouldClose() && drawn_frames < 600) {
-    printf("drawn_frames: %d\n",drawn_frames);
-    drawn_frames += 1;
+  while(!WindowShouldClose()) {
     size_t num_bytes = jack_ringbuffer_read_space(jack_stuff->ringbuffer_audio);
     if(num_bytes < 48000 * sizeof(float)) {
       text.freq = 50.0 + 1000.0 * slider_freq.scroll;

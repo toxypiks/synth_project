@@ -8,6 +8,7 @@ typedef struct FfmpegStuff {
   RenderTexture2D screen;
   int fps;
   int pipe[2];
+  bool enable;
 } FfmpegStuff;
 
 #define READ_END 0
