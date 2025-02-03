@@ -203,6 +203,8 @@ void adsr_display_widget(Ui_Rect rect, ADSR *adsr, Color c, float adsr_height, f
   DrawLineV(p3, p4, c);
   DrawLineV(p0, p4, WHITE);
 
+  Shader rec_shader = LoadShader(NULL, "../shaders/rectangle.fs");
+
   Vector2 progress_p0 = {adsr_width * w + x, 1.0f*h + y};
   Vector2 progress_p1 = {adsr_width * w + x, (1 - adsr_height) * h + y};
   float thick = w * 0.005f;
@@ -213,7 +215,10 @@ void adsr_display_widget(Ui_Rect rect, ADSR *adsr, Color c, float adsr_height, f
     .width = 2.0 * surrounding,
     .height = surrounding + progress_p0.y - progress_p1.y,
   };
+
+  BeginShaderMode(rec_shader);
   DrawRectangleRec(rec, PINK);
+  EndShaderMode();
   DrawLineEx(progress_p0, progress_p1, thick, BLUE);
 }
 
