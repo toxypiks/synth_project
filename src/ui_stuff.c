@@ -228,9 +228,9 @@ void adsr_display_widget(Ui_Rect rect, ADSR *adsr, Color c, float adsr_height, f
 
   Rectangle source = {0.0f, 0.0f, 1.0f, 1.0f};
   Vector2 origin = { 0.0f, 0.0f };
-  DrawTexturePro(texture, source, rec, origin, 0.0, PINK);
+  DrawTexturePro(texture, source, rec, origin, 0.0, GREEN);
   EndShaderMode();
-  DrawLineEx(progress_p0, progress_p1, thick, BLUE);
+  DrawLineEx(progress_p0, progress_p1, thick, GREEN);
 }
 
 void adsr_widget(Ui_Rect rect, ADSR *adsr, float adsr_height, float adsr_width)
