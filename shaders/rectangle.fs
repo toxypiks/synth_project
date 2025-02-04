@@ -11,10 +11,13 @@ void main()
   float y = fragTexCoord.y;
   //finalColor = vec4(x, y, 0, 1);
 
-  if (x < 0.5) {
-    finalColor = vec4(fragColor.xyz, x);
+  if (x < 0.5 && y > 0.120) {
+    finalColor = vec4(0, x*0.7, 0, 1);
   }
-  else {
-  finalColor = vec4(fragColor.xyz, 1 - x);
+  else if (x > 0.5 && y > 0.120) {
+    finalColor = vec4(0, (1 - x)*0.7, 0, 1);
+  }
+  else if (y > 0.120) {
+    finalColor = vec4(0, 0, 0, 0);
   }
 }

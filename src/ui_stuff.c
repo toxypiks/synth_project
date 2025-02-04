@@ -205,10 +205,11 @@ void adsr_display_widget(Ui_Rect rect, ADSR *adsr, Color c, float adsr_height, f
   DrawLineV(p0, p4, WHITE);
 
   Shader rec_shader = LoadShader(NULL, "../shaders/rectangle.fs");
+  Shader circ_shader = LoadShader(NULL, "../shaders/circle.fs");
 
   Vector2 progress_p0 = {adsr_width * w + x, 1.0f*h + y};
   Vector2 progress_p1 = {adsr_width * w + x, (1 - adsr_height) * h + y};
-  float thick = w * 0.005f;
+  float thick = w * 0.010f;
   float surrounding = 2.5f * thick;
   Rectangle rec = {
     .x = progress_p0.x - surrounding,
@@ -217,19 +218,25 @@ void adsr_display_widget(Ui_Rect rect, ADSR *adsr, Color c, float adsr_height, f
     .height = surrounding + progress_p0.y - progress_p1.y,
   };
 
-  Vector2 position_rec = {
-    .x = progress_p0.x - surrounding,
+  Rectangle tip = {
+    .x = progress_p1.x - surrounding,
     .y = progress_p1.y - surrounding,
+    .width = 2.0f * surrounding,
+    .height = 2.0f * surrounding,
   };
 
   Texture2D texture = { rlGetTextureIdDefault(), 1, 1, 1, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8};
 
-  BeginShaderMode(rec_shader);
-
+  BeginShaderMode(circ_shader);
   Rectangle source = {0.0f, 0.0f, 1.0f, 1.0f};
   Vector2 origin = { 0.0f, 0.0f };
+  DrawTexturePro(texture, source, tip, origin, 0.0, GREEN);
+  EndShaderMode();
+
+  BeginShaderMode(rec_shader);
   DrawTexturePro(texture, source, rec, origin, 0.0, GREEN);
   EndShaderMode();
+
   DrawLineEx(progress_p0, progress_p1, thick, GREEN);
 }
 
