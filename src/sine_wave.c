@@ -38,8 +38,7 @@ int main(void) {
     return -1;
   }
 
-  UiStuff ui_stuff = {0};
-  ui_stuff.screen = LoadRenderTexture(screen_width, screen_height);
+  UiStuff* ui_stuff = create_ui_stuff(screen_width, screen_height);
 
   RayOutBuffer ray_out_buffer = create_ray_out_buffer(10000);
 
@@ -117,7 +116,7 @@ int main(void) {
 
     BeginDrawing();
     // TODO check record toggle on
-      BeginTextureMode(ui_stuff.screen);
+      BeginTextureMode(ui_stuff->screen);
         ClearBackground(BLACK);
 
         layout_stack_push(&ls, LO_VERT, ui_rect(0, 0, w, h), 3, 0);
@@ -138,7 +137,7 @@ int main(void) {
       Vector2 pos_rect = {0,0};
       Rectangle flip_rect = {0, 0, screen_width, -1 * (int)screen_height};
 
-      DrawTextureRec(ui_stuff.screen.texture,
+      DrawTextureRec(ui_stuff->screen.texture,
                      flip_rect,
                      pos_rect,
                      WHITE);
@@ -146,7 +145,7 @@ int main(void) {
     EndDrawing();
     assert(ls.count == 0);
 
-    Image image = LoadImageFromTexture(ui_stuff.screen.texture);
+    Image image = LoadImageFromTexture(ui_stuff->screen.texture);
     ffmpeg_send_frame(&ffmpeg_stuff, image.data, screen_width, screen_height);
     // TODO check if screen_width and screen_height could change <- window resizable
 
@@ -171,6 +170,7 @@ int main(void) {
   }
   CloseWindow();
   ffmpeg_end_rendering(&ffmpeg_stuff);
+  ui_stuff_clear(ui_stuff);
   jack_stuff_clear(jack_stuff);
   return 0;
 }

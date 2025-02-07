@@ -28,10 +28,6 @@
     (ls)->count -= 1;                                                          \
   } while (0)
 
-typedef struct UiStuff {
-  RenderTexture2D screen;
-} UiStuff;
-
 typedef struct Ui_Rect {
   float x;
   float y;
@@ -78,6 +74,13 @@ typedef struct Text {
   float freq;
   float vol;
 } Text;
+
+typedef struct UiStuff {
+  RenderTexture2D screen;
+} UiStuff;
+
+UiStuff* create_ui_stuff(size_t screen_width, size_t screen_height);
+void ui_stuff_clear(UiStuff*);
 
 Ui_Rect ui_rect(float x, float y, float w, float h);
 Ui_Rect layout_slot_loc(Layout *l, const char *file_path, int line);
