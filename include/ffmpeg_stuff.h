@@ -2,10 +2,9 @@
 #define FFMPEG_H_
 
 #include <stddef.h>
-#include <raylib.h>
+#include <stdbool.h>
 
 typedef struct FfmpegStuff {
-  RenderTexture2D screen;
   int fps;
   int pipe[2];
   bool enable;

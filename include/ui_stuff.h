@@ -28,6 +28,10 @@
     (ls)->count -= 1;                                                          \
   } while (0)
 
+typedef struct UiStuff {
+  RenderTexture2D screen;
+} UiStuff;
+
 typedef struct Ui_Rect {
   float x;
   float y;

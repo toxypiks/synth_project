@@ -12,6 +12,7 @@
 
 int main(void) {
   Envelop adsr_envelop = {0};
+
   size_t window_factor = 80;
   size_t screen_width = (16*window_factor);
   size_t screen_height = (9*window_factor);
@@ -36,10 +37,13 @@ int main(void) {
   if (ret != 0) {
     return -1;
   }
-  ffmpeg_stuff.screen = LoadRenderTexture(screen_width, screen_height);
+
+  UiStuff ui_stuff = {0};
+  ui_stuff.screen = LoadRenderTexture(screen_width, screen_height);
 
   RayOutBuffer ray_out_buffer = create_ray_out_buffer(10000);
 
+  // TODO states der Slider in UI-Stuff
   Layout_Stack ls = {0};
   SliderState slider_vol = {0};
   slider_vol.scroll = 0.0f;
@@ -52,6 +56,7 @@ int main(void) {
     .vol = 1.0f
   };
 
+  // adsr view UI stuff und Model
   float adsr_height = 0.0f;
   float sum_ads = 0.0f;
   float sum_adsr = 0.0f;
@@ -112,7 +117,7 @@ int main(void) {
 
     BeginDrawing();
     // TODO check record toggle on
-      BeginTextureMode(ffmpeg_stuff.screen);
+      BeginTextureMode(ui_stuff.screen);
         ClearBackground(BLACK);
 
         layout_stack_push(&ls, LO_VERT, ui_rect(0, 0, w, h), 3, 0);
@@ -133,7 +138,7 @@ int main(void) {
       Vector2 pos_rect = {0,0};
       Rectangle flip_rect = {0, 0, screen_width, -1 * (int)screen_height};
 
-      DrawTextureRec(ffmpeg_stuff.screen.texture,
+      DrawTextureRec(ui_stuff.screen.texture,
                      flip_rect,
                      pos_rect,
                      WHITE);
@@ -141,7 +146,7 @@ int main(void) {
     EndDrawing();
     assert(ls.count == 0);
 
-    Image image = LoadImageFromTexture(ffmpeg_stuff.screen.texture);
+    Image image = LoadImageFromTexture(ui_stuff.screen.texture);
     ffmpeg_send_frame(&ffmpeg_stuff, image.data, screen_width, screen_height);
     // TODO check if screen_width and screen_height could change <- window resizable
 
