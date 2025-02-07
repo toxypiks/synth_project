@@ -42,13 +42,7 @@ int main(void) {
 
   RayOutBuffer ray_out_buffer = create_ray_out_buffer(10000);
 
-  // TODO states der Slider in UI-Stuff
   Layout_Stack ls = {0};
-  SliderState slider_vol = {0};
-  slider_vol.scroll = 0.0f;
-
-  SliderState slider_freq = {0};
-  slider_freq.scroll = 0.0f;
 
   Text text = {
     .freq = 50.f,
@@ -65,9 +59,9 @@ int main(void) {
   while(!WindowShouldClose()) {
     size_t num_bytes = jack_ringbuffer_read_space(jack_stuff->ringbuffer_audio);
     if(num_bytes < 48000 * sizeof(float)) {
-      text.freq = 50.0 + 1000.0 * slider_freq.scroll;
+      text.freq = 50.0 + 1000.0 * ui_stuff->slider_freq.scroll;
       change_frequency(&osc, text.freq);
-      text.vol = 1.0 * slider_vol.scroll;
+      text.vol = 1.0 * ui_stuff->slider_vol.scroll;
       change_amp(&osc, text.vol);
       gen_signal_in_buf(&osc,  data_buf, 1024, &adsr_envelop);
 
@@ -127,9 +121,9 @@ int main(void) {
         layout_stack_pop(&ls);
         signal_widget(layout_stack_slot(&ls), &ray_out_buffer, BLUE);
         layout_stack_push(&ls, LO_HORZ, layout_stack_slot(&ls), 3, 0);
-        slider_widget(layout_stack_slot(&ls), &slider_vol);
+        slider_widget(layout_stack_slot(&ls), &ui_stuff->slider_vol);
         adsr_widget(layout_stack_slot(&ls), &adsr, adsr_height, adsr_length);
-        slider_widget(layout_stack_slot(&ls), &slider_freq);
+        slider_widget(layout_stack_slot(&ls), &ui_stuff->slider_freq);
         layout_stack_pop(&ls);
         layout_stack_pop(&ls);
       EndTextureMode();

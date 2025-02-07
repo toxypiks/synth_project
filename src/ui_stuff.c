@@ -267,6 +267,8 @@ UiStuff* create_ui_stuff(size_t screen_width, size_t screen_height){
   UiStuff* ui_stuff = (UiStuff*)malloc(sizeof(UiStuff));
   // init part
   ui_stuff->screen = LoadRenderTexture(screen_width, screen_height);
+  ui_stuff->slider_vol.scroll = 0.0f;
+  ui_stuff->slider_freq.scroll = 0.0f;
 
   return ui_stuff;
 }

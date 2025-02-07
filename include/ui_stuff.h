@@ -77,6 +77,8 @@ typedef struct Text {
 
 typedef struct UiStuff {
   RenderTexture2D screen;
+  SliderState slider_vol;
+  SliderState slider_freq;
 } UiStuff;
 
 UiStuff* create_ui_stuff(size_t screen_width, size_t screen_height);
