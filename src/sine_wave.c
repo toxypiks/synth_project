@@ -44,25 +44,20 @@ int main(void) {
 
   Layout_Stack ls = {0};
 
-  Text text = {
-    .freq = 50.f,
-    .vol = 1.0f
-  };
-
   // adsr view UI stuff und Model
   float adsr_height = 0.0f;
   float sum_ads = 0.0f;
   float sum_adsr = 0.0f;
   float adsr_length = 0.0f;
-  ADSR adsr = {{.scroll=0.05f},{.scroll=0.25f},{.scroll=0.5f},{.scroll=0.2}};
 
   while(!WindowShouldClose()) {
     size_t num_bytes = jack_ringbuffer_read_space(jack_stuff->ringbuffer_audio);
     if(num_bytes < 48000 * sizeof(float)) {
-      text.freq = 50.0 + 1000.0 * ui_stuff->slider_freq.scroll;
-      change_frequency(&osc, text.freq);
-      text.vol = 1.0 * ui_stuff->slider_vol.scroll;
-      change_amp(&osc, text.vol);
+      // TODO ~Setter for text ->better update for ui_stuff
+      ui_stuff->text.freq = 50.0 + 1000.0 * ui_stuff->slider_freq.scroll;
+      change_frequency(&osc, ui_stuff->text.freq);
+      ui_stuff->text.vol = 1.0 * ui_stuff->slider_vol.scroll;
+      change_amp(&osc, ui_stuff->text.vol);
       gen_signal_in_buf(&osc,  data_buf, 1024, &adsr_envelop);
 
       // adsr x,y0,y1 values
@@ -117,12 +112,12 @@ int main(void) {
         layout_stack_push(&ls, LO_HORZ, layout_stack_slot(&ls), 3, 0);
         start_button_widget(layout_stack_slot(&ls), PINK, &is_play_pressed);
         reset_button_widget(layout_stack_slot(&ls), PINK, &is_reset_pressed);
-        text_widget(layout_stack_slot(&ls), &text);
+        text_widget(layout_stack_slot(&ls), &ui_stuff->text);
         layout_stack_pop(&ls);
         signal_widget(layout_stack_slot(&ls), &ray_out_buffer, BLUE);
         layout_stack_push(&ls, LO_HORZ, layout_stack_slot(&ls), 3, 0);
         slider_widget(layout_stack_slot(&ls), &ui_stuff->slider_vol);
-        adsr_widget(layout_stack_slot(&ls), &adsr, adsr_height, adsr_length);
+        adsr_widget(layout_stack_slot(&ls), &ui_stuff->adsr, adsr_height, adsr_length);
         slider_widget(layout_stack_slot(&ls), &ui_stuff->slider_freq);
         layout_stack_pop(&ls);
         layout_stack_pop(&ls);
@@ -148,18 +143,18 @@ int main(void) {
     //tone.current_vol =  is_play_pressed ? 1.0 : 0.0;
 
     if(is_reset_pressed) {
-      adsr.attack.scroll = 0.05f;
-      adsr.decay.scroll = 0.25f;
-      adsr.sustain.scroll = 0.5f;
-      adsr.release.scroll = 0.2;
+      ui_stuff->adsr.attack.scroll = 0.05f;
+      ui_stuff->adsr.decay.scroll = 0.25f;
+      ui_stuff->adsr.sustain.scroll = 0.5f;
+      ui_stuff->adsr.release.scroll = 0.2;
     }
 
     // program logic - controller part
     // TODO: signal state via ringbuffer
-    adsr_envelop.attack  = adsr.attack.scroll;
-    adsr_envelop.decay   = adsr.decay.scroll;
-    adsr_envelop.sustain = adsr.sustain.scroll;
-    adsr_envelop.release = adsr.release.scroll;
+    adsr_envelop.attack  = ui_stuff->adsr.attack.scroll;
+    adsr_envelop.decay   = ui_stuff->adsr.decay.scroll;
+    adsr_envelop.sustain = ui_stuff->adsr.sustain.scroll;
+    adsr_envelop.release = ui_stuff->adsr.release.scroll;
     envelop_trigger(&adsr_envelop,is_play_pressed);
   }
   CloseWindow();
