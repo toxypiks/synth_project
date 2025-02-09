@@ -11,44 +11,37 @@
 #include "ffmpeg_stuff.h"
 
 int main(void) {
-  Envelop adsr_envelop = {0};
-
-  size_t window_factor = 80;
-  size_t screen_width = (16*window_factor);
-  size_t screen_height = (9*window_factor);
 
   FfmpegStuff ffmpeg_stuff = {0};
   ffmpeg_stuff.enable = false;
   ffmpeg_stuff.fps = 60;
-
-  printf("init jack stuff\n");
-  JackStuff* jack_stuff = create_jack_stuff("SineWaveWithJack", 192000);
-  float data_buf[1024];
-  Oscillator osc = {.amp = 1.0, .freq = 440, .phase = 0};
-
-  // init raylib stuff
-  SetConfigFlags(FLAG_WINDOW_RESIZABLE);
-  InitWindow(screen_width, screen_height, "sine_wave");
-
-  printf("set target fps: %d\n", ffmpeg_stuff.fps);
-  SetTargetFPS(ffmpeg_stuff.fps);
 
   int ret = ffmpeg_start_rendering(&ffmpeg_stuff, screen_width, screen_height);
   if (ret != 0) {
     return -1;
   }
 
-  UiStuff* ui_stuff = create_ui_stuff(screen_width, screen_height);
-
-  RayOutBuffer ray_out_buffer = create_ray_out_buffer(10000);
-
-  Layout_Stack ls = {0};
-
-  // adsr view UI stuff und Model
+  Envelop adsr_envelop = {0};
+  // adsr view Ui stuff and model
   float adsr_height = 0.0f;
   float sum_ads = 0.0f;
   float sum_adsr = 0.0f;
   float adsr_length = 0.0f;
+
+  JackStuff* jack_stuff = create_jack_stuff("SineWaveWithJack", 192000);
+  float data_buf[1024];
+  Oscillator osc = {.amp = 1.0, .freq = 440, .phase = 0};
+
+  size_t window_factor = 80;
+  size_t screen_width = (16*window_factor);
+  size_t screen_height = (9*window_factor);
+  SetConfigFlags(FLAG_WINDOW_RESIZABLE);
+  InitWindow(screen_width, screen_height, "sine_wave");
+  SetTargetFPS(ffmpeg_stuff.fps);
+  RayOutBuffer ray_out_buffer = create_ray_out_buffer(10000);
+
+  UiStuff* ui_stuff = create_ui_stuff(screen_width, screen_height);
+  LayoutStack ls = {0};
 
   while(!WindowShouldClose()) {
     size_t num_bytes = jack_ringbuffer_read_space(jack_stuff->ringbuffer_audio);
@@ -136,11 +129,9 @@ int main(void) {
 
     Image image = LoadImageFromTexture(ui_stuff->screen.texture);
     ffmpeg_send_frame(&ffmpeg_stuff, image.data, screen_width, screen_height);
-    // TODO check if screen_width and screen_height could change <- window resizable
+    // TODO check if screen_width and screen_height can change <- window resizable
 
     UnloadImage(image);
-
-    //tone.current_vol =  is_play_pressed ? 1.0 : 0.0;
 
     if(is_reset_pressed) {
       ui_stuff->adsr.attack.scroll = 0.05f;

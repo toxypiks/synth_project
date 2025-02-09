@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include "ui_stuff.h"
 
-void button_widget_simple(Ui_Rect r, Color c) {
+void button_widget_simple(UiRect r, Color c) {
   float rw = r.w;
   float rh = r.h;
   float rx = r.x;
@@ -34,7 +34,7 @@ void gen_signal_in_buf(SignalState *signal_state) {
   }
 }
 
-void signal_widget_simple(Ui_Rect r, SignalState *signal_state, Color c) {
+void signal_widget_simple(UiRect r, SignalState *signal_state, Color c) {
   float rw = r.w;
   float rh = r.h;
   float rx = r.x;
@@ -54,7 +54,7 @@ int main(void) {
   InitWindow(width, height, "Sine Wave Ui");
   SetTargetFPS(60);
 
-  Layout_Stack ls = {0};
+  LayoutStack ls = {0};
   SliderState slider_vol = {0};
   slider_vol.scroll = 0.0f;
 

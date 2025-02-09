@@ -4,8 +4,8 @@
 #include <assert.h>
 #include <rlgl.h>
 
-Ui_Rect ui_rect(float x, float y, float w, float h) {
-  Ui_Rect r = {0};
+UiRect ui_rect(float x, float y, float w, float h) {
+  UiRect r = {0};
   r.x = x;
   r.y = y;
   r.w = w;
@@ -13,14 +13,14 @@ Ui_Rect ui_rect(float x, float y, float w, float h) {
   return r;
 }
 
-Ui_Rect layout_slot_loc(Layout *l, const char *file_path, int line)
+UiRect layout_slot_loc(Layout *l, const char *file_path, int line)
 {
   if (l->i >= l->count) {
     fprintf(stderr, "%s:%d: ERROR: Layout overflow\n", file_path, line);
     exit(1);
   }
 
-  Ui_Rect r = {0};
+  UiRect r = {0};
 
   switch (l->orient) {
   case LO_HORZ:
@@ -68,7 +68,7 @@ Ui_Rect layout_slot_loc(Layout *l, const char *file_path, int line)
   return r;
 }
 
-void layout_stack_push(Layout_Stack *ls, Layout_Orient orient, Ui_Rect rect, size_t count, float gap)
+void layout_stack_push(LayoutStack *ls, LayoutOrient orient, UiRect rect, size_t count, float gap)
 {
   Layout l = {0};
   l.orient = orient;
@@ -78,9 +78,9 @@ void layout_stack_push(Layout_Stack *ls, Layout_Orient orient, Ui_Rect rect, siz
   da_append(ls, l);
 }
 
-void widget(Ui_Rect r, Color c) { DrawRectangle(r.x, r.y, r.w, r.h, c); }
+void widget(UiRect r, Color c) { DrawRectangle(r.x, r.y, r.w, r.h, c); }
 
-void slider_widget(Ui_Rect r, SliderState *slider_state) {
+void slider_widget(UiRect r, SliderState *slider_state) {
   float rw = r.w;
   float rh = r.h;
   float rx = r.x;
@@ -126,7 +126,7 @@ void slider_widget(Ui_Rect r, SliderState *slider_state) {
   DrawCircleV(knob_position, knob_radius, knob_color);
 }
 
-void start_button_widget(Ui_Rect r, Color c, bool *is_pressed)
+void start_button_widget(UiRect r, Color c, bool *is_pressed)
 {
   Vector2 button_position = {r.x + r.w/2, r.y + r.h/2};
   float button_radius = r.h * 0.1f;
@@ -147,7 +147,7 @@ void start_button_widget(Ui_Rect r, Color c, bool *is_pressed)
   DrawTriangle(v1, v2, v3, c);
 }
 
-void reset_button_widget(Ui_Rect r, Color c, bool *is_pressed)
+void reset_button_widget(UiRect r, Color c, bool *is_pressed)
 {
   Vector2 button_position = {r.x + r.w/2, r.y + r.h/2};
   float button_radius = r.h * 0.1f;
@@ -167,7 +167,7 @@ void reset_button_widget(Ui_Rect r, Color c, bool *is_pressed)
   DrawText(text, button_position.x - button_radius*0.7, button_position.y - button_radius*0.2, 12, c);
 }
 
-void signal_widget(Ui_Rect r, RayOutBuffer *ray_out_buffer, Color c)
+void signal_widget(UiRect r, RayOutBuffer *ray_out_buffer, Color c)
 {
   for (size_t i = 0; i < ray_out_buffer->global_frames_count; ++i)
   {
@@ -182,7 +182,7 @@ void signal_widget(Ui_Rect r, RayOutBuffer *ray_out_buffer, Color c)
   }
 }
 
-void adsr_display_widget(Ui_Rect rect, ADSR *adsr, Color c, float adsr_height, float adsr_width) {
+void adsr_display_widget(UiRect rect, ADSR *adsr, Color c, float adsr_height, float adsr_width) {
   float x = rect.x;
   float y = rect.y;
   float w = rect.w;
@@ -240,9 +240,9 @@ void adsr_display_widget(Ui_Rect rect, ADSR *adsr, Color c, float adsr_height, f
   DrawLineEx(progress_p0, progress_p1, thick, GREEN);
 }
 
-void adsr_widget(Ui_Rect rect, ADSR *adsr, float adsr_height, float adsr_width)
+void adsr_widget(UiRect rect, ADSR *adsr, float adsr_height, float adsr_width)
 {
-  Layout_Stack ls = {0};
+  LayoutStack ls = {0};
   layout_stack_push(&ls, LO_VERT, rect, 2, 0);
   adsr_display_widget(layout_stack_slot(&ls), adsr, BLUE, adsr_height, adsr_width);
   layout_stack_push(&ls, LO_HORZ, rect, 4, 0);
@@ -254,7 +254,7 @@ void adsr_widget(Ui_Rect rect, ADSR *adsr, float adsr_height, float adsr_width)
   layout_stack_pop(&ls);
 }
 
-void text_widget(Ui_Rect r, Text *text)
+void text_widget(UiRect r, Text *text)
 {
   char buffer[256];
   snprintf(buffer, sizeof(buffer), "Volume: %f", text->vol);

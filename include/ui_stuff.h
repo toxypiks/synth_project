@@ -28,21 +28,21 @@
     (ls)->count -= 1;                                                          \
   } while (0)
 
-typedef struct Ui_Rect {
+typedef struct UiRect {
   float x;
   float y;
   float w;
   float h;
-} Ui_Rect;
+} UiRect;
 
-typedef enum Layout_Orient {
+typedef enum LayoutOrient {
   LO_HORZ,
   LO_VERT,
-} Layout_Orient;
+} LayoutOrient;
 
 typedef struct Layout {
-  Layout_Orient orient;
-  Ui_Rect rect;
+  LayoutOrient orient;
+  UiRect rect;
   size_t count;
   size_t i;
   float gap;
@@ -52,7 +52,7 @@ typedef struct Layout_Stack {
   Layout *items;
   size_t count;
   size_t capacity;
-} Layout_Stack;
+} LayoutStack;
 
 typedef struct SliderState {
   bool scroll_dragging;
@@ -86,18 +86,18 @@ typedef struct UiStuff {
 UiStuff* create_ui_stuff(size_t screen_width, size_t screen_height);
 void ui_stuff_clear(UiStuff*);
 
-Ui_Rect ui_rect(float x, float y, float w, float h);
-Ui_Rect layout_slot_loc(Layout *l, const char *file_path, int line);
-void layout_stack_push(Layout_Stack *ls, Layout_Orient orient, Ui_Rect rect, size_t count, float gap);
+UiRect ui_rect(float x, float y, float w, float h);
+UiRect layout_slot_loc(Layout *l, const char *file_path, int line);
+void layout_stack_push(LayoutStack *ls, LayoutOrient orient, UiRect rect, size_t count, float gap);
 
-void widget(Ui_Rect r, Color c);
-void slider_widget(Ui_Rect r, SliderState *slider_state);
-void start_button_widget(Ui_Rect r, Color c, bool *is_pressed);
-void reset_button_widget(Ui_Rect r, Color c, bool *is_pressed);
-void signal_widget(Ui_Rect r, RayOutBuffer *ray_out_buffer, Color c);
-void adsr_display_widget(Ui_Rect rect, ADSR *adsr, Color c, float adsr_height, float adsr_width);
-void adsr_widget(Ui_Rect rect, ADSR *adsr, float adsr_height, float adsr_width);
-void text_widget(Ui_Rect r, Text *text);
+void widget(UiRect r, Color c);
+void slider_widget(UiRect r, SliderState *slider_state);
+void start_button_widget(UiRect r, Color c, bool *is_pressed);
+void reset_button_widget(UiRect r, Color c, bool *is_pressed);
+void signal_widget(UiRect r, RayOutBuffer *ray_out_buffer, Color c);
+void adsr_display_widget(UiRect rect, ADSR *adsr, Color c, float adsr_height, float adsr_width);
+void adsr_widget(UiRect rect, ADSR *adsr, float adsr_height, float adsr_width);
+void text_widget(UiRect r, Text *text);
 
 
 
