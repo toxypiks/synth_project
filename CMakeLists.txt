@@ -111,6 +111,7 @@ target_link_libraries(sine_wave
   jack_stuff
   ui_stuff
   ffmpeg_stuff
+  synth_model
   )
 
 set(SINGLE_THREAD_EX_SRC
@@ -248,4 +249,25 @@ target_include_directories(ffmpeg_stuff
 
 target_link_libraries(ffmpeg_stuff
   ${RAYLIB}
+  )
+
+set(SYNTH_MODEL_SRC
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/synth_model.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/synth_model.h
+  )
+
+add_library(synth_model)
+target_sources(synth_model
+ PRIVATE
+  ${SYNTH_MODEL_SRC}
+  )
+
+target_include_directories(synth_model
+ PRIVATE
+ ${INCLUDE}
+ )
+
+target_link_libraries(synth_model
+  oscillator
+  envelop
   )

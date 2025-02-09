@@ -9,6 +9,7 @@
 #include "jack_stuff.h"
 #include "ui_stuff.h"
 #include "ffmpeg_stuff.h"
+#include "synth_model.h"
 
 int main(void) {
 
@@ -16,25 +17,23 @@ int main(void) {
   ffmpeg_stuff.enable = false;
   ffmpeg_stuff.fps = 60;
 
+  size_t window_factor = 80;
+  size_t screen_width = (16*window_factor);
+  size_t screen_height = (9*window_factor);
+
   int ret = ffmpeg_start_rendering(&ffmpeg_stuff, screen_width, screen_height);
   if (ret != 0) {
     return -1;
   }
 
-  Envelop adsr_envelop = {0};
+  SynthModel* synth_model = create_synth_model();
   // adsr view Ui stuff and model
   float adsr_height = 0.0f;
-  float sum_ads = 0.0f;
-  float sum_adsr = 0.0f;
   float adsr_length = 0.0f;
 
   JackStuff* jack_stuff = create_jack_stuff("SineWaveWithJack", 192000);
   float data_buf[1024];
-  Oscillator osc = {.amp = 1.0, .freq = 440, .phase = 0};
 
-  size_t window_factor = 80;
-  size_t screen_width = (16*window_factor);
-  size_t screen_height = (9*window_factor);
   SetConfigFlags(FLAG_WINDOW_RESIZABLE);
   InitWindow(screen_width, screen_height, "sine_wave");
   SetTargetFPS(ffmpeg_stuff.fps);
@@ -47,33 +46,23 @@ int main(void) {
     size_t num_bytes = jack_ringbuffer_read_space(jack_stuff->ringbuffer_audio);
     if(num_bytes < 48000 * sizeof(float)) {
       // TODO ~Setter for text ->better update for ui_stuff
+      // TODO Seperate value for label from actual parameter for change frequency
       ui_stuff->text.freq = 50.0 + 1000.0 * ui_stuff->slider_freq.scroll;
-      change_frequency(&osc, ui_stuff->text.freq);
       ui_stuff->text.vol = 1.0 * ui_stuff->slider_vol.scroll;
-      change_amp(&osc, ui_stuff->text.vol);
-      gen_signal_in_buf(&osc,  data_buf, 1024, &adsr_envelop);
-
-      // adsr x,y0,y1 values
-      adsr_height = adsr_envelop.current_value;
-      sum_ads = 48000.0f *(adsr_envelop.attack + adsr_envelop.decay + 0.5);
-      sum_adsr = 48000.0f *(adsr_envelop.attack + adsr_envelop.decay + 0.5 + adsr_envelop.release);
       adsr_length = 0;
-      if((adsr_envelop.sample_count < sum_ads) && (adsr_envelop.envelop_state ==  PRESSED_ATTACK
-                                           || adsr_envelop.envelop_state == PRESSED_DECAY
-                                           || adsr_envelop.envelop_state == PRESSED_SUSTAIN)){
-        adsr_length = adsr_envelop.sample_count/sum_adsr;
-      } else if ((adsr_envelop.sample_count > sum_adsr) && adsr_envelop.envelop_state ==  PRESSED_ATTACK
-                                           || adsr_envelop.envelop_state == PRESSED_DECAY
-                                           || adsr_envelop.envelop_state == PRESSED_SUSTAIN) {
-        adsr_length = (sum_ads/sum_adsr);
-      } else if (adsr_envelop.envelop_state == RELEASED) {
-        adsr_length =  adsr_envelop.attack + adsr_envelop.decay + 0.5 + (adsr_envelop.sample_count_release / (48000.0f * adsr_envelop.release));
 
-      }
+      synth_model_update(synth_model,
+                         data_buf,
+                         ui_stuff->text.vol,
+                         ui_stuff->text.freq,
+                         &adsr_height,
+                         &adsr_length);
+
 
       jack_ringbuffer_write(jack_stuff->ringbuffer_audio, (void *)data_buf, 1024*sizeof(float));
       jack_ringbuffer_write(jack_stuff->ringbuffer_video, (void *)data_buf, 1024*sizeof(float));
 
+      // TODO audio generation or raylib videooutput need extra thread
       if(jack_stuff->ringbuffer_video){
         float output_buffer[1024];
         size_t num_bytes = jack_ringbuffer_read_space(jack_stuff->ringbuffer_video);
@@ -93,6 +82,7 @@ int main(void) {
     float w = GetRenderWidth();
     float h = GetRenderHeight();
 
+    // TODO ui_stuff
     bool is_play_pressed = false;
     bool is_reset_pressed = false;
 
@@ -141,12 +131,12 @@ int main(void) {
     }
 
     // program logic - controller part
-    // TODO: signal state via ringbuffer
-    adsr_envelop.attack  = ui_stuff->adsr.attack.scroll;
-    adsr_envelop.decay   = ui_stuff->adsr.decay.scroll;
-    adsr_envelop.sustain = ui_stuff->adsr.sustain.scroll;
-    adsr_envelop.release = ui_stuff->adsr.release.scroll;
-    envelop_trigger(&adsr_envelop,is_play_pressed);
+    synth_model_envelope_update(synth_model,
+                                ui_stuff->adsr.attack.scroll,
+                                ui_stuff->adsr.decay.scroll,
+                                ui_stuff->adsr.sustain.scroll,
+                                ui_stuff->adsr.release.scroll,
+                                is_play_pressed);
   }
   CloseWindow();
   ffmpeg_end_rendering(&ffmpeg_stuff);
