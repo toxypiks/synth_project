@@ -267,13 +267,22 @@ UiStuff* create_ui_stuff(size_t screen_width, size_t screen_height){
   UiStuff* ui_stuff = (UiStuff*)malloc(sizeof(UiStuff));
   // init part
   ui_stuff->screen = LoadRenderTexture(screen_width, screen_height);
+
+  ui_stuff->slider_vol.scroll_dragging = false;
   ui_stuff->slider_vol.scroll = 0.0f;
+  ui_stuff->slider_freq.scroll_dragging = false;
   ui_stuff->slider_freq.scroll = 0.0f;
+
   ui_stuff->text.freq = 50.f;
   ui_stuff->text.vol = 1.0f;
+
+  ui_stuff->adsr.attack.scroll_dragging = false;
   ui_stuff->adsr.attack.scroll=0.05f;
+  ui_stuff->adsr.decay.scroll_dragging = false;
   ui_stuff->adsr.decay.scroll=0.25f;
+  ui_stuff->adsr.sustain.scroll_dragging = false;
   ui_stuff->adsr.sustain.scroll=0.5f;
+  ui_stuff->adsr.release.scroll_dragging = false;
   ui_stuff->adsr.release.scroll=0.2;
 
   return ui_stuff;

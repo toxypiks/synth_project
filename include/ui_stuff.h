@@ -48,7 +48,7 @@ typedef struct Layout {
   float gap;
 } Layout;
 
-typedef struct Layout_Stack {
+typedef struct LayoutStack {
   Layout *items;
   size_t count;
   size_t capacity;
