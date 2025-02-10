@@ -68,6 +68,8 @@ typedef struct ADSR {
   SliderState decay;
   SliderState sustain;
   SliderState release;
+  Shader rec_shader;
+  Shader circ_shader;
 } ADSR;
 
 typedef struct Text {

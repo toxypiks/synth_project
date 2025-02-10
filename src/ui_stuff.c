@@ -204,9 +204,6 @@ void adsr_display_widget(UiRect rect, ADSR *adsr, Color c, float adsr_height, fl
   DrawLineV(p3, p4, c);
   DrawLineV(p0, p4, WHITE);
 
-  Shader rec_shader = LoadShader(NULL, "../shaders/rectangle.fs");
-  Shader circ_shader = LoadShader(NULL, "../shaders/circle.fs");
-
   Vector2 progress_p0 = {adsr_width * w + x, 1.0f*h + y};
   Vector2 progress_p1 = {adsr_width * w + x, (1 - adsr_height) * h + y};
   float thick = w * 0.010f;
@@ -227,13 +224,13 @@ void adsr_display_widget(UiRect rect, ADSR *adsr, Color c, float adsr_height, fl
 
   Texture2D texture = { rlGetTextureIdDefault(), 1, 1, 1, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8};
 
-  BeginShaderMode(circ_shader);
+  BeginShaderMode(adsr->circ_shader);
   Rectangle source = {0.0f, 0.0f, 1.0f, 1.0f};
   Vector2 origin = { 0.0f, 0.0f };
   DrawTexturePro(texture, source, tip, origin, 0.0, GREEN);
   EndShaderMode();
 
-  BeginShaderMode(rec_shader);
+  BeginShaderMode(adsr->rec_shader);
   DrawTexturePro(texture, source, rec, origin, 0.0, GREEN);
   EndShaderMode();
 
@@ -284,6 +281,9 @@ UiStuff* create_ui_stuff(size_t screen_width, size_t screen_height){
   ui_stuff->adsr.sustain.scroll=0.5f;
   ui_stuff->adsr.release.scroll_dragging = false;
   ui_stuff->adsr.release.scroll=0.2;
+
+  ui_stuff->adsr.rec_shader = LoadShader(NULL, "../shaders/rectangle.fs");
+  ui_stuff->adsr.circ_shader = LoadShader(NULL, "../shaders/circle.fs");
 
   return ui_stuff;
 }
