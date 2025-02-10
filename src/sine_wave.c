@@ -42,14 +42,27 @@ int main(void) {
   UiStuff* ui_stuff = create_ui_stuff(screen_width, screen_height);
   LayoutStack ls = {0};
 
+  bool is_play_pressed = false;
+  bool is_reset_pressed = false;
+
   while(!WindowShouldClose()) {
     size_t num_bytes = jack_ringbuffer_read_space(jack_stuff->ringbuffer_audio);
-    if(num_bytes < 48000 * sizeof(float)) {
+
+    if(num_bytes < 4800 * sizeof(float))
+    {
       // TODO ~Setter for text ->better update for ui_stuff
       // TODO Seperate value for label from actual parameter for change frequency
       ui_stuff->text.freq = 50.0 + 1000.0 * ui_stuff->slider_freq.scroll;
       ui_stuff->text.vol = 1.0 * ui_stuff->slider_vol.scroll;
       adsr_length = 0;
+
+      // program logic - controller part
+      synth_model_envelope_update(synth_model,
+                                  ui_stuff->adsr.attack.scroll,
+                                  ui_stuff->adsr.decay.scroll,
+                                  ui_stuff->adsr.sustain.scroll,
+                                  ui_stuff->adsr.release.scroll,
+                                  is_play_pressed);
 
       synth_model_update(synth_model,
                          data_buf,
@@ -57,7 +70,6 @@ int main(void) {
                          ui_stuff->text.freq,
                          &adsr_height,
                          &adsr_length);
-
 
       jack_ringbuffer_write(jack_stuff->ringbuffer_audio, (void *)data_buf, 1024*sizeof(float));
       jack_ringbuffer_write(jack_stuff->ringbuffer_video, (void *)data_buf, 1024*sizeof(float));
@@ -81,10 +93,6 @@ int main(void) {
 
     float w = GetRenderWidth();
     float h = GetRenderHeight();
-
-    // TODO ui_stuff
-    bool is_play_pressed = false;
-    bool is_reset_pressed = false;
 
     BeginDrawing();
     // TODO check record toggle on
@@ -129,14 +137,6 @@ int main(void) {
       ui_stuff->adsr.sustain.scroll = 0.5f;
       ui_stuff->adsr.release.scroll = 0.2;
     }
-
-    // program logic - controller part
-    synth_model_envelope_update(synth_model,
-                                ui_stuff->adsr.attack.scroll,
-                                ui_stuff->adsr.decay.scroll,
-                                ui_stuff->adsr.sustain.scroll,
-                                ui_stuff->adsr.release.scroll,
-                                is_play_pressed);
   }
   CloseWindow();
   ffmpeg_end_rendering(&ffmpeg_stuff);
