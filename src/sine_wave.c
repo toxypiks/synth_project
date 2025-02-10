@@ -11,6 +11,59 @@
 #include "ffmpeg_stuff.h"
 #include "synth_model.h"
 
+typedef struct ThreadStuff{
+  bool is_running;
+  // exchange variables
+  float attack;
+  float decay;
+  float sustain;
+  float release;
+  bool is_play_pressed;
+  JackStuff* jack_stuff;
+  float vol;
+  float freq;
+  float adsr_height;
+  float adsr_length;
+} ThreadStuff;
+
+void* model_gen_signal_thread_fct(void* thread_stuff_raw)
+{
+  ThreadStuff* thread_stuff = (ThreadStuff*)thread_stuff_raw;
+
+  SynthModel* synth_model = create_synth_model();
+
+  while(thread_stuff->is_running) {
+    size_t num_bytes = jack_ringbuffer_read_space(thread_stuff->jack_stuff->ringbuffer_audio);
+    float data_buf[1024];
+
+    if(num_bytes < 4800 * sizeof(float))
+    {
+      thread_stuff->adsr_length = 0;
+      synth_model_envelope_update(synth_model,
+                                  thread_stuff->attack,
+                                  thread_stuff->decay,
+                                  thread_stuff->sustain,
+                                  thread_stuff->release,
+                                  thread_stuff->is_play_pressed);
+
+      synth_model_update(synth_model,
+                         data_buf,
+                         thread_stuff->vol,
+                         thread_stuff->freq,
+                         &thread_stuff->adsr_height,
+                         &thread_stuff->adsr_length);
+
+      jack_ringbuffer_write(thread_stuff->jack_stuff->ringbuffer_audio, (void *)data_buf, 1024*sizeof(float));
+      jack_ringbuffer_write(thread_stuff->jack_stuff->ringbuffer_video, (void *)data_buf, 1024*sizeof(float));
+    } else {
+      usleep(4680);
+    }
+  }
+  synth_model_clear(synth_model);
+  printf("model_gen_signal_thread ended, Good bye! \n");
+  return NULL;
+}
+
 int main(void) {
 
   FfmpegStuff ffmpeg_stuff = {0};
@@ -30,9 +83,26 @@ int main(void) {
   // adsr view Ui stuff and model
   float adsr_height = 0.0f;
   float adsr_length = 0.0f;
+  ThreadStuff* thread_stuff = (ThreadStuff*)malloc(sizeof(ThreadStuff));
+
+  //TODO create_thread_stuff in own thread_stuff header
+  thread_stuff->is_running = true;
+  thread_stuff->attack = 0.0f;
+  thread_stuff->decay = 0.0f;
+  thread_stuff->sustain = 0.0f;
+  thread_stuff->release = 0.0f;
+  thread_stuff->is_play_pressed = false;
 
   JackStuff* jack_stuff = create_jack_stuff("SineWaveWithJack", 192000);
-  float data_buf[1024];
+  thread_stuff->jack_stuff = jack_stuff;
+  thread_stuff->vol = 0.0;
+  thread_stuff->freq = 0.0;
+  thread_stuff->adsr_height = 0.0f;
+  thread_stuff->adsr_length = 0.0f;
+
+  // start model thread
+  pthread_t model_gen_signal_thread;
+  pthread_create(&model_gen_signal_thread, NULL, model_gen_signal_thread_fct, (void*) thread_stuff);
 
   SetConfigFlags(FLAG_WINDOW_RESIZABLE);
   InitWindow(screen_width, screen_height, "sine_wave");
@@ -47,48 +117,36 @@ int main(void) {
 
   while(!WindowShouldClose()) {
     size_t num_bytes = jack_ringbuffer_read_space(jack_stuff->ringbuffer_audio);
+    // TODO ~Setter for text ->better update for ui_stuff
+    // TODO Seperate value for label from actual parameter for change frequency
+    ui_stuff->text.freq = 50.0 + 1000.0 * ui_stuff->slider_freq.scroll;
+    ui_stuff->text.vol = 1.0 * ui_stuff->slider_vol.scroll;
 
-    if(num_bytes < 4800 * sizeof(float))
-    {
-      // TODO ~Setter for text ->better update for ui_stuff
-      // TODO Seperate value for label from actual parameter for change frequency
-      ui_stuff->text.freq = 50.0 + 1000.0 * ui_stuff->slider_freq.scroll;
-      ui_stuff->text.vol = 1.0 * ui_stuff->slider_vol.scroll;
-      adsr_length = 0;
+    // TODO write update_thread_stuff function in own thread stuff header
+    // program logic - controller part
+    thread_stuff->attack = ui_stuff->adsr.attack.scroll;
+    thread_stuff->decay = ui_stuff->adsr.decay.scroll;
+    thread_stuff->sustain = ui_stuff->adsr.sustain.scroll;
+    thread_stuff->release = ui_stuff->adsr.release.scroll;
+    thread_stuff->is_play_pressed = is_play_pressed;
+    thread_stuff->vol = ui_stuff->text.vol;
+    thread_stuff->freq = ui_stuff->text.freq;
+    adsr_height = thread_stuff->adsr_height;
+    adsr_length = thread_stuff->adsr_length;
 
-      // program logic - controller part
-      synth_model_envelope_update(synth_model,
-                                  ui_stuff->adsr.attack.scroll,
-                                  ui_stuff->adsr.decay.scroll,
-                                  ui_stuff->adsr.sustain.scroll,
-                                  ui_stuff->adsr.release.scroll,
-                                  is_play_pressed);
+    if(jack_stuff->ringbuffer_video){
+      float output_buffer[1024];
+      size_t num_bytes = jack_ringbuffer_read_space(jack_stuff->ringbuffer_video);
+      if(num_bytes >= (1024* sizeof(float))) {
 
-      synth_model_update(synth_model,
-                         data_buf,
-                         ui_stuff->text.vol,
-                         ui_stuff->text.freq,
-                         &adsr_height,
-                         &adsr_length);
-
-      jack_ringbuffer_write(jack_stuff->ringbuffer_audio, (void *)data_buf, 1024*sizeof(float));
-      jack_ringbuffer_write(jack_stuff->ringbuffer_video, (void *)data_buf, 1024*sizeof(float));
-
-      // TODO audio generation or raylib videooutput need extra thread
-      if(jack_stuff->ringbuffer_video){
-        float output_buffer[1024];
-        size_t num_bytes = jack_ringbuffer_read_space(jack_stuff->ringbuffer_video);
-        if(num_bytes >= (1024* sizeof(float))) {
-
-          jack_ringbuffer_read(jack_stuff->ringbuffer_video, (char*)output_buffer, 1024 * sizeof(float));
-        } else {
-          for ( int i = 0; i < 1024; i++)
-          {
-            output_buffer[i] = 0.0;
-          }
+        jack_ringbuffer_read(jack_stuff->ringbuffer_video, (char*)output_buffer, 1024 * sizeof(float));
+      } else {
+        for ( int i = 0; i < 1024; i++)
+        {
+          output_buffer[i] = 0.0;
         }
-        copy_to_ray_out_buffer(&ray_out_buffer, output_buffer, 1024);
       }
+      copy_to_ray_out_buffer(&ray_out_buffer, output_buffer, 1024);
     }
 
     float w = GetRenderWidth();
@@ -140,6 +198,10 @@ int main(void) {
   }
   CloseWindow();
   ffmpeg_end_rendering(&ffmpeg_stuff);
+
+  thread_stuff->is_running = false;
+  pthread_join(model_gen_signal_thread, NULL);
+
   ui_stuff_clear(ui_stuff);
   jack_stuff_clear(jack_stuff);
   return 0;
