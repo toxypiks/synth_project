@@ -112,6 +112,7 @@ target_link_libraries(sine_wave
   ui_stuff
   ffmpeg_stuff
   synth_model
+  thread_stuff
   )
 
 set(SINGLE_THREAD_EX_SRC
@@ -270,4 +271,24 @@ target_include_directories(synth_model
 target_link_libraries(synth_model
   oscillator
   envelop
+  )
+
+set(THREAD_STUFF_SOURCES
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/thread_stuff.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/thread_stuff.h
+  )
+
+add_library(thread_stuff)
+target_sources(thread_stuff
+ PRIVATE
+  ${THREAD_STUFF_SOURCES}
+  )
+
+target_include_directories(thread_stuff
+ PRIVATE
+ ${INCLUDE}
+ )
+
+target_link_libraries(thread_stuff
+  ${JACK_LIBRARIES}
   )

@@ -10,21 +10,7 @@
 #include "ui_stuff.h"
 #include "ffmpeg_stuff.h"
 #include "synth_model.h"
-
-typedef struct ThreadStuff{
-  bool is_running;
-  // exchange variables
-  float attack;
-  float decay;
-  float sustain;
-  float release;
-  bool is_play_pressed;
-  JackStuff* jack_stuff;
-  float vol;
-  float freq;
-  float adsr_height;
-  float adsr_length;
-} ThreadStuff;
+#include "thread_stuff.h"
 
 void* model_gen_signal_thread_fct(void* thread_stuff_raw)
 {
@@ -83,22 +69,9 @@ int main(void) {
   // adsr view Ui stuff and model
   float adsr_height = 0.0f;
   float adsr_length = 0.0f;
-  ThreadStuff* thread_stuff = (ThreadStuff*)malloc(sizeof(ThreadStuff));
-
-  //TODO create_thread_stuff in own thread_stuff header
-  thread_stuff->is_running = true;
-  thread_stuff->attack = 0.0f;
-  thread_stuff->decay = 0.0f;
-  thread_stuff->sustain = 0.0f;
-  thread_stuff->release = 0.0f;
-  thread_stuff->is_play_pressed = false;
 
   JackStuff* jack_stuff = create_jack_stuff("SineWaveWithJack", 192000);
-  thread_stuff->jack_stuff = jack_stuff;
-  thread_stuff->vol = 0.0;
-  thread_stuff->freq = 0.0;
-  thread_stuff->adsr_height = 0.0f;
-  thread_stuff->adsr_length = 0.0f;
+  ThreadStuff* thread_stuff = create_thread_stuff(jack_stuff);
 
   // start model thread
   pthread_t model_gen_signal_thread;
