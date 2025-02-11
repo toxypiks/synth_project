@@ -95,17 +95,12 @@ int main(void) {
     ui_stuff->text.freq = 50.0 + 1000.0 * ui_stuff->slider_freq.scroll;
     ui_stuff->text.vol = 1.0 * ui_stuff->slider_vol.scroll;
 
-    // TODO write update_thread_stuff function in own thread stuff header
     // program logic - controller part
-    thread_stuff->attack = ui_stuff->adsr.attack.scroll;
-    thread_stuff->decay = ui_stuff->adsr.decay.scroll;
-    thread_stuff->sustain = ui_stuff->adsr.sustain.scroll;
-    thread_stuff->release = ui_stuff->adsr.release.scroll;
-    thread_stuff->is_play_pressed = is_play_pressed;
-    thread_stuff->vol = ui_stuff->text.vol;
-    thread_stuff->freq = ui_stuff->text.freq;
-    adsr_height = thread_stuff->adsr_height;
-    adsr_length = thread_stuff->adsr_length;
+    update_thread_stuff(thread_stuff, ui_stuff->adsr.attack.scroll, ui_stuff->adsr.decay.scroll, ui_stuff->adsr.sustain.scroll, ui_stuff->adsr.release.scroll, is_play_pressed, ui_stuff->text.vol, ui_stuff->text.freq, adsr_height, adsr_length);
+
+    //Why did that work?
+    //adsr_height = thread_stuff->adsr_height;
+    //adsr_length = thread_stuff->adsr_length;
 
     if(jack_stuff->ringbuffer_video){
       float output_buffer[1024];

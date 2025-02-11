@@ -20,5 +20,6 @@ typedef struct ThreadStuff {
 } ThreadStuff;
 
 ThreadStuff* create_thread_stuff(JackStuff* jack_stuff);
+void update_thread_stuff(ThreadStuff* thread_stuff, float attack, float decay, float sustain, float release, bool is_play_pressed, float vol, float freq, float adsr_height, float adsr_lenght);
 
 #endif // THREAD_STUFF_H_

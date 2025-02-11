@@ -19,3 +19,16 @@ ThreadStuff* create_thread_stuff(JackStuff* jack_stuff)
 
   return thread_stuff;
 }
+
+void update_thread_stuff(ThreadStuff* thread_stuff, float attack, float decay, float sustain, float release, bool is_play_pressed, float vol, float freq, float adsr_height, float adsr_length)
+{
+  thread_stuff->attack = attack;
+  thread_stuff->decay = decay;
+  thread_stuff->sustain = sustain;
+  thread_stuff->release = release;
+  thread_stuff->is_play_pressed = is_play_pressed;
+  thread_stuff->vol = vol;
+  thread_stuff->freq = freq;
+  thread_stuff->adsr_height = adsr_height;
+  thread_stuff->adsr_length = adsr_length;
+}
