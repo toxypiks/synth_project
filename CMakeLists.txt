@@ -145,6 +145,16 @@ target_sources(consumer_producer_message_queue
   ${CONSUMER_PRODUCER_MSG_SRC}
   )
 
+target_include_directories(consumer_producer_message_queue
+ PRIVATE
+ ${INCLUDE}
+ test_scripts/include
+ )
+
+target_link_libraries(consumer_producer_message_queue
+ lf_queue
+)
+
 set(CONSUMER_PRODUCER_WITH_BUF_SRC
   ${CMAKE_CURRENT_SOURCE_DIR}/test_scripts/consumer_producer_with_buf.c
   )
@@ -302,3 +312,21 @@ target_include_directories(thread_stuff
 target_link_libraries(thread_stuff
   ${JACK_LIBRARIES}
   )
+
+set(LF_QUEUE_SOURCES
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_scripts/src/lf_queue.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_scripts/src/lf_misc.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_scripts/include/lf_queue.h
+  )
+
+add_library(lf_queue)
+target_sources(lf_queue
+ PRIVATE
+  ${LF_QUEUE_SOURCES}
+  )
+
+target_include_directories(lf_queue
+ PRIVATE
+ ${INCLUDE}
+ test_scripts/include
+ )
