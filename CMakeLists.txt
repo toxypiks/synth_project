@@ -135,6 +135,16 @@ target_sources(consumer_producer1
   ${CONSUMER_PRODUCER1_SRC}
   )
 
+set(CONSUMER_PRODUCER_MSG_SRC
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_scripts/consumer_producer_message_queue.c
+  )
+
+add_executable(consumer_producer_message_queue)
+target_sources(consumer_producer_message_queue
+ PRIVATE
+  ${CONSUMER_PRODUCER_MSG_SRC}
+  )
+
 set(CONSUMER_PRODUCER_WITH_BUF_SRC
   ${CMAKE_CURRENT_SOURCE_DIR}/test_scripts/consumer_producer_with_buf.c
   )
