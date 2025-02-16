@@ -96,7 +96,15 @@ int main(void) {
     ui_stuff->text.vol = 1.0 * ui_stuff->slider_vol.scroll;
 
     // program logic - controller part
-    update_thread_stuff(thread_stuff, ui_stuff->adsr.attack.scroll, ui_stuff->adsr.decay.scroll, ui_stuff->adsr.sustain.scroll, ui_stuff->adsr.release.scroll, is_play_pressed, ui_stuff->text.vol, ui_stuff->text.freq, &adsr_height, &adsr_length);
+    update_thread_stuff(thread_stuff,
+                        ui_stuff->adsr.attack.scroll,
+                        ui_stuff->adsr.decay.scroll,
+                        ui_stuff->adsr.sustain.scroll,
+                        ui_stuff->adsr.release.scroll,
+                        is_play_pressed, ui_stuff->text.vol,
+                        ui_stuff->text.freq,
+                        &adsr_height,
+                        &adsr_length);
 
     if(jack_stuff->ringbuffer_video){
       float output_buffer[1024];
