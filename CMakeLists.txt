@@ -155,6 +155,26 @@ target_link_libraries(consumer_producer_message_queue
  lf_queue
 )
 
+set(CONSUMER_PRODUCER_MSG_WITH_HANDLER_SRC
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_scripts/consumer_producer_message_queue_with_handler.c
+  )
+
+add_executable(consumer_producer_message_queue_with_handler)
+target_sources(consumer_producer_message_queue_with_handler
+ PRIVATE
+  ${CONSUMER_PRODUCER_MSG_WITH_HANDLER_SRC}
+  )
+
+target_include_directories(consumer_producer_message_queue_with_handler
+ PRIVATE
+ ${INCLUDE}
+ test_scripts/include
+ )
+
+target_link_libraries(consumer_producer_message_queue_with_handler
+ lf_queue
+)
+
 set(CONSUMER_PRODUCER_WITH_BUF_SRC
   ${CMAKE_CURRENT_SOURCE_DIR}/test_scripts/consumer_producer_with_buf.c
   )
