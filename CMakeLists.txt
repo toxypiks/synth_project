@@ -173,6 +173,7 @@ target_include_directories(consumer_producer_message_queue_with_handler
 
 target_link_libraries(consumer_producer_message_queue_with_handler
  lf_queue
+ msg_handler
 )
 
 set(CONSUMER_PRODUCER_WITH_BUF_SRC
@@ -334,9 +335,9 @@ target_link_libraries(thread_stuff
   )
 
 set(LF_QUEUE_SOURCES
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_scripts/src/lf_queue.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_scripts/src/lf_misc.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_scripts/include/lf_queue.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/lf_queue.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/lf_misc.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/lf_queue.h
   )
 
 add_library(lf_queue)
@@ -348,5 +349,21 @@ target_sources(lf_queue
 target_include_directories(lf_queue
  PRIVATE
  ${INCLUDE}
- test_scripts/include
  )
+
+ # msh_handler library
+ set(MSG_HANDLER_SOURCES
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/msg_handler.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/msg_handler.h
+)
+
+add_library(msg_handler)
+target_sources(msg_handler
+ PRIVATE
+  ${MSG_HANDLER_SOURCES}
+)
+
+target_include_directories(msg_handler
+ PRIVATE
+ ${INCLUDE}
+)
