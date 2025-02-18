@@ -113,6 +113,7 @@ target_link_libraries(sine_wave
   ffmpeg_stuff
   synth_model
   thread_stuff
+  model_gen_signal
   )
 
 set(SINGLE_THREAD_EX_SRC
@@ -366,4 +367,25 @@ target_sources(msg_handler
 target_include_directories(msg_handler
  PRIVATE
  ${INCLUDE}
+)
+
+# model_gen_signal library
+ set(MODEL_GEN_SIGNAL_SOURCES
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/model_gen_signal.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/model_gen_signal.h
+)
+
+add_library(model_gen_signal)
+target_sources(model_gen_signal
+ PRIVATE
+ ${MODEL_GEN_SIGNAL_SOURCES}
+)
+
+target_include_directories(model_gen_signal
+ PRIVATE
+ ${INCLUDE}
+)
+
+target_link_libraries(model_gen_signal
+  synth_model
 )

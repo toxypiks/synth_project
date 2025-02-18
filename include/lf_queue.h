@@ -1,3 +1,6 @@
+#ifndef LF_QUEUE_H_
+#define LF_QUEUE_H_
+
 #include <inttypes.h>
 #include <stddef.h>
 
@@ -40,3 +43,5 @@ int lf_queue_pop(lf_queue_bss_state *qbsss, void **key, void **value);
 void lf_queue_query(struct lf_queue_bss_state *qbsss,
                     enum lf_queue_query query_type, void *query_input,
                     void *query_output);
+
+#endif // LF_QUEUE_H_
