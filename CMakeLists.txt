@@ -3,6 +3,7 @@ project(synthesizer_tryout)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS ON)
 
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${PROJECT_SOURCE_DIR}/cmake")
 
@@ -114,6 +115,7 @@ target_link_libraries(sine_wave
   synth_model
   thread_stuff
   model_gen_signal
+  lf_queue
   )
 
 set(SINGLE_THREAD_EX_SRC
@@ -388,4 +390,5 @@ target_include_directories(model_gen_signal
 
 target_link_libraries(model_gen_signal
   synth_model
+  msg_handler
 )

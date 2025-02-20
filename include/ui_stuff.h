@@ -63,14 +63,14 @@ typedef struct Tone {
   float current_vol;
 } Tone;
 
-typedef struct ADSR {
+typedef struct UiADSR {
   SliderState attack;
   SliderState decay;
   SliderState sustain;
   SliderState release;
   Shader rec_shader;
   Shader circ_shader;
-} ADSR;
+} UiADSR;
 
 typedef struct Text {
   float freq;
@@ -82,7 +82,7 @@ typedef struct UiStuff {
   SliderState slider_vol;
   SliderState slider_freq;
   Text text;
-  ADSR adsr;
+  UiADSR adsr;
 } UiStuff;
 
 UiStuff* create_ui_stuff(size_t screen_width, size_t screen_height);
@@ -97,8 +97,8 @@ void slider_widget(UiRect r, SliderState *slider_state);
 void start_button_widget(UiRect r, Color c, bool *is_pressed);
 void reset_button_widget(UiRect r, Color c, bool *is_pressed);
 void signal_widget(UiRect r, RayOutBuffer *ray_out_buffer, Color c);
-void adsr_display_widget(UiRect rect, ADSR *adsr, Color c, float adsr_height, float adsr_width);
-void adsr_widget(UiRect rect, ADSR *adsr, float adsr_height, float adsr_width);
+void adsr_display_widget(UiRect rect, UiADSR *adsr, Color c, float adsr_height, float adsr_width);
+void adsr_widget(UiRect rect, UiADSR *adsr, float adsr_height, float adsr_width);
 void text_widget(UiRect r, Text *text);
 
 

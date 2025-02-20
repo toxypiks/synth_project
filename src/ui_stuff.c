@@ -182,7 +182,7 @@ void signal_widget(UiRect r, RayOutBuffer *ray_out_buffer, Color c)
   }
 }
 
-void adsr_display_widget(UiRect rect, ADSR *adsr, Color c, float adsr_height, float adsr_width) {
+void adsr_display_widget(UiRect rect, UiADSR *adsr, Color c, float adsr_height, float adsr_width) {
   float x = rect.x;
   float y = rect.y;
   float w = rect.w;
@@ -237,7 +237,7 @@ void adsr_display_widget(UiRect rect, ADSR *adsr, Color c, float adsr_height, fl
   DrawLineEx(progress_p0, progress_p1, thick, GREEN);
 }
 
-void adsr_widget(UiRect rect, ADSR *adsr, float adsr_height, float adsr_width)
+void adsr_widget(UiRect rect, UiADSR *adsr, float adsr_height, float adsr_width)
 {
   LayoutStack ls = {0};
   layout_stack_push(&ls, LO_VERT, rect, 2, 0);

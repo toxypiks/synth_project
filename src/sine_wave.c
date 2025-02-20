@@ -11,6 +11,8 @@
 #include "ffmpeg_stuff.h"
 #include "thread_stuff.h"
 #include "model_gen_signal.h"
+#include "adsr.h"
+#include "lf_queue.h"
 
 int main(void) {
 
@@ -67,6 +69,18 @@ int main(void) {
         ui_stuff->text.freq,
         &adsr_height,
         &adsr_length);
+
+
+        ADSR* adsr_msg = malloc(sizeof(ADSR));
+        adsr_msg->attack = ui_stuff->adsr.attack.scroll;
+        adsr_msg->decay = ui_stuff->adsr.decay.scroll;
+        adsr_msg->sustain = ui_stuff->adsr.sustain.scroll;
+        adsr_msg->release = ui_stuff->adsr.release.scroll;
+        char* key = malloc(5*sizeof(char));
+        const char* key_src = "adsr";
+        strcpy(key, key_src);
+        int ret = lf_queue_push(&thread_stuff->msg_queue, key, adsr_msg);
+
 
         if(jack_stuff->ringbuffer_video){
             float output_buffer[1024];

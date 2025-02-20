@@ -15,6 +15,8 @@ int msg_hdl_add_key2fct(MsgHdl* msg_hdl, char* key, void (*fct)(void*)){
     return 0;
 }
 
+// TODO key should not be an object
+// just simple char*
 void msg_hdling(MsgHdl* msg_hdl, lf_queue_bss_state* msg_queue){
     char* key = NULL;
     void* value = NULL;
