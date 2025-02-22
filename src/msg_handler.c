@@ -35,3 +35,15 @@ void msg_hdling(MsgHdl* msg_hdl, lf_queue_bss_state* msg_queue){
         value = NULL;
     }
 }
+
+void set_float_value(void* new_value_raw, void* value_raw) {
+    float* new_value = (float*)new_value_raw;
+    float* value = (float*)value_raw;
+    *value = *new_value;
+}
+
+void set_bool_value(void* new_value_raw, void* value_raw) {
+    bool* new_value = (bool*)new_value_raw;
+    bool* value = (bool*)value_raw;
+    *value = *new_value;
+}

@@ -18,5 +18,7 @@ typedef struct MsgHdl{
 int msg_hdl_add_key2fct(MsgHdl* msg_hdl, char* key, void (*fct)(void*, void*), void* datastruct);
 
 void msg_hdling(MsgHdl* msg_hdl, lf_queue_bss_state* msg_queue);
+void set_float_value(void* new_value_raw, void* value_raw);
+void set_bool_value(void* new_value_raw, void* value_raw);
 
 #endif // MSG_HANDLER_H_

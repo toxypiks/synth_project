@@ -19,20 +19,6 @@ void set_adsr_values(void* adsr_new_raw, void* adsr_values_raw){
     //free(adsr_new);
 };
 
-void set_float_value(void* new_value_raw, void* value_raw) {
-    float* new_value = (float*)new_value_raw;
-    float* value = (float*)value_raw;
-    *value = *new_value;
-}
-
-void set_bool_value(void* new_value_raw, void* value_raw) {
-    bool* new_value = (bool*)new_value_raw;
-    bool* value = (bool*)value_raw;
-    *value = *new_value;
-}
-
-
-
 void* model_gen_signal_thread_fct(void* thread_stuff_raw)
 {
     ThreadStuff* thread_stuff = (ThreadStuff*)thread_stuff_raw;
