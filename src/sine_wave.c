@@ -60,15 +60,15 @@ int main(void) {
 
         // program logic - controller part
         update_thread_stuff(thread_stuff,
-        ui_stuff->adsr.attack.scroll,
-        ui_stuff->adsr.decay.scroll,
-        ui_stuff->adsr.sustain.scroll,
-        ui_stuff->adsr.release.scroll,
-        is_play_pressed,
-        ui_stuff->text.vol,
-        ui_stuff->text.freq,
-        &adsr_height,
-        &adsr_length);
+                            ui_stuff->adsr.attack.scroll,
+                            ui_stuff->adsr.decay.scroll,
+                            ui_stuff->adsr.sustain.scroll,
+                            ui_stuff->adsr.release.scroll,
+                            is_play_pressed,
+                            ui_stuff->text.vol,
+                            ui_stuff->text.freq,
+                            &adsr_height,
+                            &adsr_length);
 
 
         ADSR* adsr_msg = malloc(sizeof(ADSR));
@@ -76,10 +76,17 @@ int main(void) {
         adsr_msg->decay = ui_stuff->adsr.decay.scroll;
         adsr_msg->sustain = ui_stuff->adsr.sustain.scroll;
         adsr_msg->release = ui_stuff->adsr.release.scroll;
-        char* key = malloc(5*sizeof(char));
-        const char* key_src = "adsr";
-        strcpy(key, key_src);
-        int ret = lf_queue_push(&thread_stuff->msg_queue, key, adsr_msg);
+        char* adsr_key = malloc(5*sizeof(char));
+        const char* adsr_key_src = "adsr";
+        strcpy(adsr_key, adsr_key_src);
+        int ret_adsr = lf_queue_push(&thread_stuff->msg_queue, adsr_key, adsr_msg);
+
+        float *vol_msg = malloc(sizeof(float));
+        *vol_msg = ui_stuff->text.vol;
+        char* vol_key = malloc(4*sizeof(char));
+        const char* vol_key_src = "vol";
+        strcpy(vol_key, vol_key_src);
+        int ret_vol = lf_queue_push(&thread_stuff->msg_queue, vol_key, vol_msg);
 
 
         if(jack_stuff->ringbuffer_video){

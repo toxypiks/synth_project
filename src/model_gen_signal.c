@@ -19,6 +19,12 @@ void set_adsr_values(void* adsr_new_raw, void* adsr_values_raw){
     //free(adsr_new);
 };
 
+void set_volume(void* new_vol_raw, void* vol_raw) {
+    int* new_vol = (int*)new_vol_raw;
+    int* vol = (int*)vol_raw;
+    *vol = *new_vol;
+}
+
 
 void* model_gen_signal_thread_fct(void* thread_stuff_raw)
 {
@@ -26,11 +32,13 @@ void* model_gen_signal_thread_fct(void* thread_stuff_raw)
     SynthModel* synth_model = create_synth_model();
 
     ADSR adsr_values = {0};
+    float vol = 0.0;
 
     MsgHdl msg_hdl = {0};
-    char* key = "adsr";
-    msg_hdl_add_key2fct(&msg_hdl, key, set_adsr_values, (void*)&adsr_values);
-
+    char* key_adsr = "adsr";
+    msg_hdl_add_key2fct(&msg_hdl, key_adsr, set_adsr_values, (void*)&adsr_values);
+    char* key_vol = "vol";
+    msg_hdl_add_key2fct(&msg_hdl, key_vol, set_volume, (void*)&vol);
 
     while(thread_stuff->is_running) {
         msg_hdling(&msg_hdl, &thread_stuff->msg_queue);
@@ -51,7 +59,7 @@ void* model_gen_signal_thread_fct(void* thread_stuff_raw)
 
             synth_model_update(synth_model,
                                data_buf,
-                               thread_stuff->vol,
+                               vol,
                                thread_stuff->freq,
                                &thread_stuff->adsr_height,
                                &thread_stuff->adsr_length);
