@@ -32,24 +32,24 @@ void* print_data_thread_fct(void* thread_stuff_raw) {
   ThreadStuff* thread_stuff = (ThreadStuff*)thread_stuff_raw;
   int counter = 0;
 
-  int new_key = 0;
+  char* new_key = 0;
   float new_value = 0;
   while(thread_stuff->is_running) {
 
     while(true) {
-      int* key;
+      char* key;
       float* value;
       int ret = lf_queue_pop(&thread_stuff->msg_queue, (void**)&key, (void**)&value);
       if (ret == 0) {
         break;
       } else {
-        new_key = *key;
+        new_key = key;
         new_value = *value;
         free(key);
         free(value);
       }
     }
-    printf("new data: key: %d value: %f\n", new_key, new_value);
+    printf("new data: key: %s value: %f\n", new_key, new_value);
 
     usleep(10000);
   }
@@ -62,10 +62,9 @@ void* gen_data_thread_fct(void* thread_stuff_raw) {
   while(thread_stuff->is_running){
     int* key = malloc(sizeof(int));
     float* value = malloc(sizeof(float));
-    *key = counter;
     *value = (float)counter * 10.0;
 
-    int ret = lf_queue_push(&thread_stuff->msg_queue, key, value);
+    int ret = lf_queue_push(&thread_stuff->msg_queue, "counter", value);
       // lf_queue_push(... , counter);
     counter++;
     if(ret < 1){

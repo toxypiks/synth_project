@@ -1,6 +1,8 @@
 #include "lf_queue.h"
 #include "lf_misc.h"
 #include <assert.h>
+#include <string.h>
+#include <stdlib.h>
 
 void lf_queue_init(struct lf_queue_bss_state *qbsss,
                    struct lf_queue_bss_element *element_array,
@@ -103,7 +105,7 @@ int lf_queue_pop(struct lf_queue_bss_state *qbsss,
 }
 
 int lf_queue_push(struct lf_queue_bss_state *qbsss,
-                  void *key,
+                  char *key_str,
                   void *value)
 {
   struct lf_queue_bss_element *qbsse;
@@ -113,6 +115,9 @@ int lf_queue_push(struct lf_queue_bss_state *qbsss,
   // TRD : value can be NULL
 
   LF_MISC_BARRIER_LOAD;
+
+  void* key = malloc(sizeof(strlen(key_str)));
+  strcpy(key, key_str);
 
   if (((qbsss->write_index + 1) & qbsss->mask) != qbsss->read_index) {
     qbsse = qbsss->element_array + qbsss->write_index;

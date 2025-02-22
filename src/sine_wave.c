@@ -76,17 +76,11 @@ int main(void) {
         adsr_msg->decay = ui_stuff->adsr.decay.scroll;
         adsr_msg->sustain = ui_stuff->adsr.sustain.scroll;
         adsr_msg->release = ui_stuff->adsr.release.scroll;
-        char* adsr_key = malloc(5*sizeof(char));
-        const char* adsr_key_src = "adsr";
-        strcpy(adsr_key, adsr_key_src);
-        int ret_adsr = lf_queue_push(&thread_stuff->msg_queue, adsr_key, adsr_msg);
+        int ret_adsr = lf_queue_push(&thread_stuff->msg_queue, "adsr", adsr_msg);
 
         float *vol_msg = malloc(sizeof(float));
         *vol_msg = ui_stuff->text.vol;
-        char* vol_key = malloc(4*sizeof(char));
-        const char* vol_key_src = "vol";
-        strcpy(vol_key, vol_key_src);
-        int ret_vol = lf_queue_push(&thread_stuff->msg_queue, vol_key, vol_msg);
+        int ret_vol = lf_queue_push(&thread_stuff->msg_queue, "vol", vol_msg);
 
 
         if(jack_stuff->ringbuffer_video){
