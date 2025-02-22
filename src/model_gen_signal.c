@@ -9,24 +9,27 @@
 #include "adsr.h"
 #include "msg_handler.h"
 
+void set_adsr_values(void* adsr_new_raw, void* adsr_values_raw){
+    ADSR* adsr_values = (ADSR*)adsr_values_raw;
+    ADSR* adsr_new = (ADSR*)adsr_new_raw;
+    adsr_values->attack  = adsr_new->attack;
+    adsr_values->decay   = adsr_new->decay;
+    adsr_values->sustain = adsr_new->sustain;
+    adsr_values->release = adsr_new->release;
+    //free(adsr_new);
+};
+
+
 void* model_gen_signal_thread_fct(void* thread_stuff_raw)
 {
     ThreadStuff* thread_stuff = (ThreadStuff*)thread_stuff_raw;
     SynthModel* synth_model = create_synth_model();
 
     ADSR adsr_values = {0};
-    void set_adsr_values(void* adsr_new_raw){
-        ADSR* adsr_new = (ADSR*)adsr_new_raw;
-        adsr_values.attack  = adsr_new->attack;
-        adsr_values.decay   = adsr_new->decay;
-        adsr_values.sustain = adsr_new->sustain;
-        adsr_values.release = adsr_new->release;
-        //free(adsr_new);
-    };
 
     MsgHdl msg_hdl = {0};
     char* key = "adsr";
-    msg_hdl_add_key2fct(&msg_hdl, key, set_adsr_values);
+    msg_hdl_add_key2fct(&msg_hdl, key, set_adsr_values, (void*)&adsr_values);
 
 
     while(thread_stuff->is_running) {

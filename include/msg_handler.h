@@ -6,7 +6,8 @@
 
 typedef struct Key2Fct {
     char* key;
-    void (*fct)(void*);
+    void (*fct)(void*, void*);
+    void* datastruct;
 } Key2Fct;
 
 typedef struct MsgHdl{
@@ -14,7 +15,7 @@ typedef struct MsgHdl{
     size_t nkeys;
 } MsgHdl;
 
-int msg_hdl_add_key2fct(MsgHdl* msg_hdl, char* key, void (*fct)(void*));
+int msg_hdl_add_key2fct(MsgHdl* msg_hdl, char* key, void (*fct)(void*, void*), void* datastruct);
 
 void msg_hdling(MsgHdl* msg_hdl, lf_queue_bss_state* msg_queue);
 

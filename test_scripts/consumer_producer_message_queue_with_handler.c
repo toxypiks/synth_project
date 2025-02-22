@@ -27,7 +27,7 @@ ThreadStuff* create_thread_stuff(){
 }
 
 // TODO clean threadstuff function
-void print_data(void* data){
+void print_data(void* data, void* not_in_use){
     printf("float value: %f\n", *((float*)data));
 }
 
@@ -37,7 +37,7 @@ void* print_data_thread_fct(void* thread_stuff_raw) {
     MsgHdl msg_hdl = {0};
     char* key = "float_value";
 
-    msg_hdl_add_key2fct(&msg_hdl, key, print_data);
+    msg_hdl_add_key2fct(&msg_hdl, key, print_data, NULL);
 
     while(thread_stuff->is_running) {
         msg_hdling(&msg_hdl, &thread_stuff->msg_queue);
