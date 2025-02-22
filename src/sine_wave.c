@@ -82,6 +82,10 @@ int main(void) {
         *vol_msg = ui_stuff->text.vol;
         int ret_vol = lf_queue_push(&thread_stuff->msg_queue, "vol", vol_msg);
 
+        float *freq_msg = malloc(sizeof(float));
+        *freq_msg = ui_stuff->text.freq;
+        int ret_freq = lf_queue_push(&thread_stuff->msg_queue, "freq", freq_msg);
+
 
         if(jack_stuff->ringbuffer_video){
             float output_buffer[1024];
