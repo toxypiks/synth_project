@@ -19,11 +19,18 @@ void set_adsr_values(void* adsr_new_raw, void* adsr_values_raw){
     //free(adsr_new);
 };
 
-void set_volume(void* new_vol_raw, void* vol_raw) {
-    int* new_vol = (int*)new_vol_raw;
-    int* vol = (int*)vol_raw;
-    *vol = *new_vol;
+void set_float_value(void* new_value_raw, void* value_raw) {
+    float* new_value = (float*)new_value_raw;
+    float* value = (float*)value_raw;
+    *value = *new_value;
 }
+
+void set_bool_value(void* new_value_raw, void* value_raw) {
+    bool* new_value = (bool*)new_value_raw;
+    bool* value = (bool*)value_raw;
+    *value = *new_value;
+}
+
 
 
 void* model_gen_signal_thread_fct(void* thread_stuff_raw)
@@ -34,14 +41,17 @@ void* model_gen_signal_thread_fct(void* thread_stuff_raw)
     ADSR adsr_values = {0};
     float vol = 0.0;
     float freq = 0.0;
+    bool is_play_pressed = false;
 
     MsgHdl msg_hdl = {0};
     char* key_adsr = "adsr";
     msg_hdl_add_key2fct(&msg_hdl, key_adsr, set_adsr_values, (void*)&adsr_values);
     char* key_vol = "vol";
-    msg_hdl_add_key2fct(&msg_hdl, key_vol, set_volume, (void*)&vol);
+    msg_hdl_add_key2fct(&msg_hdl, key_vol, set_float_value, (void*)&vol);
     char* key_freq = "freq";
-    msg_hdl_add_key2fct(&msg_hdl, key_freq, set_volume, (void*)&freq);
+    msg_hdl_add_key2fct(&msg_hdl, key_freq, set_float_value, (void*)&freq);
+    char* key_is_play_pressed = "is_play_pressed";
+    msg_hdl_add_key2fct(&msg_hdl, key_is_play_pressed, set_bool_value, (void*)&is_play_pressed);
 
     while(thread_stuff->is_running) {
         msg_hdling(&msg_hdl, &thread_stuff->msg_queue);
@@ -58,7 +68,7 @@ void* model_gen_signal_thread_fct(void* thread_stuff_raw)
                                         adsr_values.decay,
                                         adsr_values.sustain,
                                         adsr_values.release,
-                                        thread_stuff->is_play_pressed);
+                                        is_play_pressed);
 
             synth_model_update(synth_model,
                                data_buf,

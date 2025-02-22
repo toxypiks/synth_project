@@ -86,6 +86,10 @@ int main(void) {
         *freq_msg = ui_stuff->text.freq;
         int ret_freq = lf_queue_push(&thread_stuff->msg_queue, "freq", freq_msg);
 
+        bool *is_play_pressed_msg = malloc(sizeof(bool));
+        *is_play_pressed_msg = is_play_pressed;
+        int ret_is_play_pressed = lf_queue_push(&thread_stuff->msg_queue, "is_play_pressed", is_play_pressed_msg);
+
 
         if(jack_stuff->ringbuffer_video){
             float output_buffer[1024];
