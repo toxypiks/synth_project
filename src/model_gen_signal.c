@@ -47,7 +47,7 @@ void* model_gen_signal_thread_fct(void* thread_stuff_raw)
 
         if(num_bytes < 4800 * sizeof(float))
         {
-            thread_stuff->adsr_length = 0;
+            adsr_length = 0;
             synth_model_envelope_update(synth_model,
                                         adsr_values.attack,
                                         adsr_values.decay,
