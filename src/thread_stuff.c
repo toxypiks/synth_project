@@ -6,9 +6,13 @@
 ThreadStuff* create_thread_stuff(JackStuff* jack_stuff)
 {
     ThreadStuff* thread_stuff = (ThreadStuff*)malloc(sizeof(ThreadStuff));
-    memset(&thread_stuff->msg_queue, 0, sizeof(lf_queue_bss_state));
-    memset(thread_stuff->element_array, 0, 16*sizeof(lf_queue_bss_element));
-    lf_queue_init(&thread_stuff->msg_queue, thread_stuff->element_array, 16);
+    memset(&thread_stuff->model_msg_queue, 0, sizeof(lf_queue_bss_state));
+    memset(thread_stuff->model_element_array, 0, 16*sizeof(lf_queue_bss_element));
+    lf_queue_init(&thread_stuff->model_msg_queue, thread_stuff->model_element_array, 16);
+
+    memset(&thread_stuff->raylib_msg_queue, 0, sizeof(lf_queue_bss_state));
+    memset(thread_stuff->raylib_element_array, 0, 16*sizeof(lf_queue_bss_element));
+    lf_queue_init(&thread_stuff->raylib_msg_queue, thread_stuff->raylib_element_array, 16);
 
     thread_stuff->is_running = true;
     thread_stuff->attack = 0.0f;
@@ -26,6 +30,7 @@ ThreadStuff* create_thread_stuff(JackStuff* jack_stuff)
     return thread_stuff;
 }
 
+/*
 void update_thread_stuff(ThreadStuff* thread_stuff, float attack, float decay, float sustain, float release, bool is_play_pressed, float vol, float freq, float* adsr_height, float* adsr_length)
 {
     thread_stuff->attack = attack;
@@ -38,3 +43,4 @@ void update_thread_stuff(ThreadStuff* thread_stuff, float attack, float decay, f
     *adsr_height = thread_stuff->adsr_height;
     *adsr_length = thread_stuff->adsr_length;
 }
+*/

@@ -30,17 +30,16 @@ void* model_gen_signal_thread_fct(void* thread_stuff_raw)
     bool is_play_pressed = false;
 
     MsgHdl msg_hdl = {0};
-    char* key_adsr = "adsr";
-    msg_hdl_add_key2fct(&msg_hdl, key_adsr, set_adsr_values, (void*)&adsr_values);
-    char* key_vol = "vol";
-    msg_hdl_add_key2fct(&msg_hdl, key_vol, set_float_value, (void*)&vol);
-    char* key_freq = "freq";
-    msg_hdl_add_key2fct(&msg_hdl, key_freq, set_float_value, (void*)&freq);
-    char* key_is_play_pressed = "is_play_pressed";
-    msg_hdl_add_key2fct(&msg_hdl, key_is_play_pressed, set_bool_value, (void*)&is_play_pressed);
+    float adsr_height = 0.0;
+    float adsr_length = 0.0;
+
+    msg_hdl_add_key2fct(&msg_hdl, "adsr", set_adsr_values, (void*)&adsr_values);
+    msg_hdl_add_key2fct(&msg_hdl, "vol", set_float_value, (void*)&vol);
+    msg_hdl_add_key2fct(&msg_hdl, "freq", set_float_value, (void*)&freq);
+    msg_hdl_add_key2fct(&msg_hdl, "is_play_pressed", set_bool_value, (void*)&is_play_pressed);
 
     while(thread_stuff->is_running) {
-        msg_hdling(&msg_hdl, &thread_stuff->msg_queue);
+        msg_hdling(&msg_hdl, &thread_stuff->model_msg_queue);
         printf("attack: %f\n", adsr_values.attack);
 
         size_t num_bytes = jack_ringbuffer_read_space(thread_stuff->jack_stuff->ringbuffer_audio);
@@ -60,9 +59,17 @@ void* model_gen_signal_thread_fct(void* thread_stuff_raw)
                                data_buf,
                                vol,
                                freq,
-                               &thread_stuff->adsr_height,
-                               &thread_stuff->adsr_length);
+                               &adsr_height,
+                               &adsr_length);
 
+            // TODO msg send in better function
+            float *adsr_height_msg = malloc(sizeof(float));
+            *adsr_height_msg = adsr_height;
+            int ret_adsr_height = lf_queue_push(&thread_stuff->raylib_msg_queue, "adsr_height", adsr_height_msg);
+
+            float *adsr_length_msg = malloc(sizeof(float));
+            *adsr_length_msg = adsr_length;
+            int ret_adsr_length = lf_queue_push(&thread_stuff->raylib_msg_queue, "adsr_length", adsr_length_msg);
             jack_ringbuffer_write(thread_stuff->jack_stuff->ringbuffer_audio, (void *)data_buf, 1024*sizeof(float));
             jack_ringbuffer_write(thread_stuff->jack_stuff->ringbuffer_video, (void *)data_buf, 1024*sizeof(float));
         } else {

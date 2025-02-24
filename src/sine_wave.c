@@ -13,6 +13,7 @@
 #include "model_gen_signal.h"
 #include "adsr.h"
 #include "lf_queue.h"
+#include "msg_handler.h"
 
 int main(void) {
 
@@ -51,44 +52,39 @@ int main(void) {
     bool is_play_pressed = false;
     bool is_reset_pressed = false;
 
+    MsgHdl msg_hdl = {0};
+
+    msg_hdl_add_key2fct(&msg_hdl, "adsr_height", set_float_value, (void*)&adsr_height);
+    msg_hdl_add_key2fct(&msg_hdl, "adsr_length", set_float_value, (void*)&adsr_length);
+
     while(!WindowShouldClose()) {
+        msg_hdling(&msg_hdl, &thread_stuff->raylib_msg_queue);
+
         size_t num_bytes = jack_ringbuffer_read_space(jack_stuff->ringbuffer_audio);
         // TODO ~Setter for text ->better update for ui_stuff
         // TODO Seperate value for label from actual parameter for change frequency
         ui_stuff->text.freq = 50.0 + 1000.0 * ui_stuff->slider_freq.scroll;
         ui_stuff->text.vol = 1.0 * ui_stuff->slider_vol.scroll;
 
-        // program logic - controller part
-        update_thread_stuff(thread_stuff,
-                            ui_stuff->adsr.attack.scroll,
-                            ui_stuff->adsr.decay.scroll,
-                            ui_stuff->adsr.sustain.scroll,
-                            ui_stuff->adsr.release.scroll,
-                            is_play_pressed,
-                            ui_stuff->text.vol,
-                            ui_stuff->text.freq,
-                            &adsr_height,
-                            &adsr_length);
-
-
         ADSR* adsr_msg = malloc(sizeof(ADSR));
         adsr_msg->attack = ui_stuff->adsr.attack.scroll;
         adsr_msg->decay = ui_stuff->adsr.decay.scroll;
         adsr_msg->sustain = ui_stuff->adsr.sustain.scroll;
         adsr_msg->release = ui_stuff->adsr.release.scroll;
-        int ret_adsr = lf_queue_push(&thread_stuff->msg_queue, "adsr", adsr_msg);
+        int ret_adsr = lf_queue_push(&thread_stuff->model_msg_queue, "adsr", adsr_msg);
 
+        // send messages through msg_queue
         float *vol_msg = malloc(sizeof(float));
         *vol_msg = ui_stuff->text.vol;
-        int ret_vol = lf_queue_push(&thread_stuff->msg_queue, "vol", vol_msg);
+        int ret_vol = lf_queue_push(&thread_stuff->model_msg_queue, "vol", vol_msg);
 
         float *freq_msg = malloc(sizeof(float));
         *freq_msg = ui_stuff->text.freq;
-        int ret_freq = lf_queue_push(&thread_stuff->msg_queue, "freq", freq_msg);
+        int ret_freq = lf_queue_push(&thread_stuff->model_msg_queue, "freq", freq_msg);
 
         bool *is_play_pressed_msg = malloc(sizeof(bool));
         *is_play_pressed_msg = is_play_pressed;
-        int ret_is_play_pressed = lf_queue_push(&thread_stuff->msg_queue, "is_play_pressed", is_play_pressed_msg);
+        int ret_is_play_pressed = lf_queue_push(&thread_stuff->model_msg_queue, "is_play_pressed", is_play_pressed_msg);
 
 
         if(jack_stuff->ringbuffer_video){
