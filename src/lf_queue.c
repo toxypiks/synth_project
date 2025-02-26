@@ -106,33 +106,35 @@ int lf_queue_pop(struct lf_queue_bss_state *qbsss,
 
 int lf_queue_push(struct lf_queue_bss_state *qbsss,
                   char *key_str,
-                  void *value)
+                  void *value_in, size_t size)
 {
-  struct lf_queue_bss_element *qbsse;
+    void* value = malloc(size);
+    memcpy(value, value_in, size);
+    struct lf_queue_bss_element *qbsse;
 
-  assert(qbsss != NULL);
-  // TRD : key can be NULL
-  // TRD : value can be NULL
+    assert(qbsss != NULL);
+    // TRD : key can be NULL
+    // TRD : value can be NULL
 
-  LF_MISC_BARRIER_LOAD;
+    LF_MISC_BARRIER_LOAD;
 
-  void* key = malloc(sizeof(strlen(key_str)));
-  strcpy(key, key_str);
+    void* key = malloc(sizeof(strlen(key_str)));
+    strcpy(key, key_str);
 
-  if (((qbsss->write_index + 1) & qbsss->mask) != qbsss->read_index) {
-    qbsse = qbsss->element_array + qbsss->write_index;
+    if (((qbsss->write_index + 1) & qbsss->mask) != qbsss->read_index) {
+        qbsse = qbsss->element_array + qbsss->write_index;
 
-    qbsse->key = key;
-    qbsse->value = value;
+        qbsse->key = key;
+        qbsse->value = value;
 
-    LF_MISC_BARRIER_STORE;
+        LF_MISC_BARRIER_STORE;
 
-    qbsss->write_index = (qbsss->write_index + 1) & qbsss->mask;
+        qbsss->write_index = (qbsss->write_index + 1) & qbsss->mask;
 
-    return 1;
-  }
+        return 1;
+    }
 
-  return 0;
+    return 0;
 }
 
 static void lf_queue_bss_internal_validate(struct lf_queue_bss_state *qbsss,

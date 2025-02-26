@@ -63,13 +63,9 @@ void* model_gen_signal_thread_fct(void* thread_stuff_raw)
                                &adsr_length);
 
             // TODO msg send in better function
-            float *adsr_height_msg = malloc(sizeof(float));
-            *adsr_height_msg = adsr_height;
-            int ret_adsr_height = lf_queue_push(&thread_stuff->raylib_msg_queue, "adsr_height", adsr_height_msg);
+            int ret_adsr_height = lf_queue_push(&thread_stuff->raylib_msg_queue, "adsr_height", (void*)&adsr_height, sizeof(float));
+            int ret_adsr_length = lf_queue_push(&thread_stuff->raylib_msg_queue, "adsr_length", (void*)&adsr_length, sizeof(float));
 
-            float *adsr_length_msg = malloc(sizeof(float));
-            *adsr_length_msg = adsr_length;
-            int ret_adsr_length = lf_queue_push(&thread_stuff->raylib_msg_queue, "adsr_length", adsr_length_msg);
             jack_ringbuffer_write(thread_stuff->jack_stuff->ringbuffer_audio, (void *)data_buf, 1024*sizeof(float));
             jack_ringbuffer_write(thread_stuff->jack_stuff->ringbuffer_video, (void *)data_buf, 1024*sizeof(float));
         } else {

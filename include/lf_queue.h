@@ -36,7 +36,7 @@ void lf_queue_cleanup(
     void (*element_cleanup_callback)(lf_queue_bss_state *qbsss,
                                      void *key, void *value));
 
-int lf_queue_push(lf_queue_bss_state *qbsss, char *key_str, void *value);
+int lf_queue_push(lf_queue_bss_state *qbsss, char *key_str, void *value, size_t size);
 
 int lf_queue_pop(lf_queue_bss_state *qbsss, void **key, void **value);
 

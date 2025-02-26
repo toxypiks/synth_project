@@ -50,20 +50,14 @@ void* gen_data_thread_fct(void* thread_stuff_raw) {
     ThreadStuff* thread_stuff = (ThreadStuff*)thread_stuff_raw;
     int counter = 0;
     while(thread_stuff->is_running){
-        char* key = malloc(12*sizeof(char));
-        char* key_src = "float_value";
-        strcpy(key, key_src);
 
-        float* value = malloc(sizeof(float));
-        *value = (float)counter * 10.0;
+        float value = (float)counter * 10.0;
 
-        int ret = lf_queue_push(&thread_stuff->msg_queue, key, value);
+        int ret = lf_queue_push(&thread_stuff->msg_queue, "float_value", (void*)&value, sizeof(float));
         // lf_queue_push(... , counter);
         counter++;
         if(ret < 1){
             printf("msg_queue is full \n");
-            free(key);
-            free(value);
         }
         if(counter >= 1024){
             printf("generated 1024 values\n");
