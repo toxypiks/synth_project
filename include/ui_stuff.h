@@ -99,6 +99,7 @@ void reset_button_widget(UiRect r, Color c, bool *is_pressed);
 void signal_widget(UiRect r, RayOutBuffer *ray_out_buffer, Color c);
 void adsr_display_widget(UiRect rect, UiADSR *adsr, Color c, float adsr_height, float adsr_width);
 void adsr_widget(UiRect rect, UiADSR *adsr, float adsr_height, float adsr_width);
+void octave_widget(UiRect rect);
 void text_widget(UiRect r, Text *text);
 
 

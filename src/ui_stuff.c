@@ -251,6 +251,55 @@ void adsr_widget(UiRect rect, UiADSR *adsr, float adsr_height, float adsr_width)
   layout_stack_pop(&ls);
 }
 
+void octave_widget(UiRect rect)
+{
+    float x = rect.x;
+    float y = rect.y;
+    float w = rect.w;
+    float h = rect.h;
+    float hl = 0.001*h;
+    /*
+ ___________________________
+|  | | | |  |  | | | | | |  |
+|  | | | |  |  | | | | | |  |
+|  | | | |  |  | | | | | |  |
+|  |_| |_|  |  |_| |_| |_|  |
+|   |   |   |   |   |   |   |
+|   |   |   |   |   |   |   |
+|___|___|___|___|___|___|___|
+*/
+
+
+    Vector2 frame_p0 = {x, y};
+    Vector2 frame_p1 = {x + w, y };
+    DrawLineV(frame_p0, frame_p1, BLUE);
+
+    // "white"" keys
+    float white_key_w = w/7.0f;
+    for(size_t i = 0; i < 8; ++i){
+        Vector2 p0 = {i*white_key_w + x, 0.0f + y};
+        Vector2 p1 = {i*white_key_w + x, 1.0f * h + y };
+
+        DrawLineV(p0, p1, BLUE);
+    }
+    for(size_t i = 0; i < 6; ++i){
+        if(i != 2){
+            Vector2 p0 = {i*white_key_w + x + 0.75*white_key_w, y};
+            Vector2 size = {0.5*white_key_w , 0.6*h};
+            DrawRectangleV(p0, size, BLUE);
+        }
+    }
+    Vector2 frame_p2 = {x, y + h - hl};
+    Vector2 frame_p3 = {x + w, y + h - hl};
+    DrawLineV(frame_p2, frame_p3, BLUE);
+}
+
+/*void keyboard_widget(UiRect rect) {
+    (void) rect;
+    LayoutStack ls = {0};
+    layout_stack_push(&ls, LO_VERT, rect, 10, 0);
+}*/
+
 void text_widget(UiRect r, Text *text)
 {
   char buffer[256];

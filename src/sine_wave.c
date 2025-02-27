@@ -114,7 +114,8 @@ int main(void) {
         signal_widget(layout_stack_slot(&ls), &ray_out_buffer, BLUE);
         layout_stack_push(&ls, LO_HORZ, layout_stack_slot(&ls), 3, 0);
         slider_widget(layout_stack_slot(&ls), &ui_stuff->slider_vol);
-        adsr_widget(layout_stack_slot(&ls), &ui_stuff->adsr, adsr_height, adsr_length);
+        //adsr_widget(layout_stack_slot(&ls), &ui_stuff->adsr, adsr_height, adsr_length);
+        octave_widget(layout_stack_slot(&ls));
         slider_widget(layout_stack_slot(&ls), &ui_stuff->slider_freq);
         layout_stack_pop(&ls);
         layout_stack_pop(&ls);
