@@ -269,17 +269,27 @@ void octave_widget(UiRect rect)
 |___|___|___|___|___|___|___|
 */
 
+   Color c = WHITE;
+   Rectangle key = {0};
 
     // "white"" keys
     float white_key_w = w/7.0f;
     for(size_t i = 0; i < 7; ++i){
-        Vector2 start = {i*white_key_w + x, 0.0f + y};
-        Vector2 size = {white_key_w, h + y};
+        key.x = i*white_key_w + x;
+        key.y = 0.0f + y;
+        key.width = white_key_w;
+        key.height = h + y;
 
-        DrawRectangleV(start, size, WHITE);
+        if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+            Vector2 mouse_position = GetMousePosition();
+            if (CheckCollisionPointRec(GetMousePosition(), key)) {
+                c = GREEN; //ColorBrightness(c, 0.75f);
+            }
+        }
+        DrawRectangleRec(key, c);
+        c = WHITE;
         Vector2 p0 = {i*white_key_w + x, 0.0f + y};
         Vector2 p1 = {i*white_key_w + x, 1.0f * h + y };
-
         DrawLineV(p0, p1, BLACK);
     }
 

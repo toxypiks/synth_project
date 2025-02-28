@@ -40,7 +40,6 @@ void* model_gen_signal_thread_fct(void* thread_stuff_raw)
 
     while(thread_stuff->is_running) {
         msg_hdling(&msg_hdl, &thread_stuff->model_msg_queue);
-        printf("attack: %f\n", adsr_values.attack);
 
         size_t num_bytes = jack_ringbuffer_read_space(thread_stuff->jack_stuff->ringbuffer_audio);
         float data_buf[1024];
