@@ -269,12 +269,12 @@ void octave_widget(UiRect rect)
 |___|___|___|___|___|___|___|
 */
 
-   Color c = WHITE;
+   Color c = BLACK;
    Rectangle key = {0};
 
     // "white"" keys
     float white_key_w = w/7.0f;
-    for(size_t i = 0; i < 7; ++i){
+    for(size_t i = 0; i < 7; ++i) {
         key.x = i*white_key_w + x;
         key.y = 0.0f + y;
         key.width = white_key_w;
@@ -283,25 +283,28 @@ void octave_widget(UiRect rect)
         if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
             Vector2 mouse_position = GetMousePosition();
             if (CheckCollisionPointRec(GetMousePosition(), key)) {
-                c = GREEN; //ColorBrightness(c, 0.75f);
+                c = ColorBrightness(c, 0.75f);
             }
         }
         DrawRectangleRec(key, c);
-        c = WHITE;
+        c = BLACK;
+    }
+
+    for(size_t i = 0; i < 8; ++i) {
         Vector2 p0 = {i*white_key_w + x, 0.0f + y};
         Vector2 p1 = {i*white_key_w + x, 1.0f * h + y };
-        DrawLineV(p0, p1, BLACK);
+        DrawLineV(p0, p1, BLUE);
     }
 
     Vector2 frame_p0 = {x, y};
     Vector2 frame_p1 = {x + w, y };
-    DrawLineV(frame_p0, frame_p1, BLACK);
+    DrawLineV(frame_p0, frame_p1, BLUE);
 
     for(size_t i = 0; i < 6; ++i){
         if(i != 2){
             Vector2 p0 = {i*white_key_w + x + 0.75*white_key_w, y};
             Vector2 size = {0.5*white_key_w , 0.6*h};
-            DrawRectangleV(p0, size, BLACK);
+            DrawRectangleV(p0, size, BLUE);
         }
     }
     Vector2 frame_p2 = {x, y + h - hl};
