@@ -269,47 +269,106 @@ void octave_widget(UiRect rect)
 |___|___|___|___|___|___|___|
 */
 
-   Color c = BLACK;
-   Rectangle key = {0};
+   Rectangle white_key = {0};
+   Color white_key_c = BLACK;
+   float white_key_w = w/7.0f;
 
-    // "white"" keys
-    float white_key_w = w/7.0f;
-    for(size_t i = 0; i < 7; ++i) {
-        key.x = i*white_key_w + x;
-        key.y = 0.0f + y;
-        key.width = white_key_w;
-        key.height = h + y;
+   white_key.y = 0.0f + y;
+   white_key.width = white_key_w;
+   white_key.height = h + y;
 
-        if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
-            Vector2 mouse_position = GetMousePosition();
-            if (CheckCollisionPointRec(GetMousePosition(), key)) {
-                c = ColorBrightness(c, 0.75f);
-            }
-        }
-        DrawRectangleRec(key, c);
-        c = BLACK;
-    }
+   Rectangle black_key = {0};
+   Color black_key_c = BLUE;
 
-    for(size_t i = 0; i < 8; ++i) {
-        Vector2 p0 = {i*white_key_w + x, 0.0f + y};
-        Vector2 p1 = {i*white_key_w + x, 1.0f * h + y };
-        DrawLineV(p0, p1, BLUE);
-    }
+   black_key.y = y;
+   black_key.width = 0.5*white_key_w;
+   black_key.height = 0.6*h;
 
-    Vector2 frame_p0 = {x, y};
-    Vector2 frame_p1 = {x + w, y };
-    DrawLineV(frame_p0, frame_p1, BLUE);
+   Rectangle middle_rec = {0};
+   Color middle_rec_color;
 
-    for(size_t i = 0; i < 6; ++i){
-        if(i != 2){
-            Vector2 p0 = {i*white_key_w + x + 0.75*white_key_w, y};
-            Vector2 size = {0.5*white_key_w , 0.6*h};
-            DrawRectangleV(p0, size, BLUE);
-        }
-    }
-    Vector2 frame_p2 = {x, y + h - hl};
-    Vector2 frame_p3 = {x + w, y + h - hl};
-    DrawLineV(frame_p2, frame_p3, BLUE);
+   Rectangle right_rec = {0};
+   Color right_rec_color;
+
+   Rectangle left_rec = {0};
+   Color left_rec_color;
+
+   Vector2 mouse_position = {-1, -1};
+
+   if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+       mouse_position = GetMousePosition();
+   }
+
+   // "white"" keys
+   for(size_t i = 0; i < 7; ++i) {
+       white_key.x =  i*white_key_w + x;
+       if (CheckCollisionPointRec(mouse_position, white_key)) {
+           middle_rec_color = ColorBrightness(white_key_c, 0.75f);
+           middle_rec.x = i*white_key_w + x;
+           middle_rec.y = 0.0f + y;
+           middle_rec.width = white_key_w;
+           middle_rec.height = h + y;
+           right_rec_color = BLUE;
+           left_rec_color = BLUE;
+           if(i < 6 && i != 2) {
+               right_rec.x = i*white_key_w + x + 0.75*white_key_w;
+               right_rec.y = y;
+               right_rec.width = 0.5*white_key_w;
+               right_rec.height = 0.6*h;
+           }
+           if(i != 3) {
+               left_rec.x = (i-1)*white_key_w + x + 0.75*white_key_w;
+               left_rec.y = y;
+               left_rec.width = 0.5*white_key_w;
+               left_rec.height = 0.6*h;
+           }
+       }
+       DrawRectangleRec(white_key, white_key_c);
+   }
+
+   for(size_t i = 0; i < 8; ++i) {
+       Vector2 p0 = {i*white_key_w + x, 0.0f + y};
+       Vector2 p1 = {i*white_key_w + x, 1.0f * h + y };
+       DrawLineV(p0, p1, BLUE);
+   }
+
+   for(size_t i = 0; i < 6; ++i){
+       if(i != 2){
+           black_key.x = i*white_key_w + x + 0.75*white_key_w;
+           if (CheckCollisionPointRec(mouse_position, black_key)) {
+               middle_rec_color = ColorBrightness(black_key_c, 0.75f);
+               middle_rec.x = i*white_key_w + x + 0.75*white_key_w;
+               middle_rec.y = y;
+               middle_rec.width = 0.5*white_key_w;
+               middle_rec.height = 0.6*h;
+
+               right_rec.x = i*white_key_w + x + 0.75*white_key_w;
+               right_rec.y = y;
+               right_rec.width = 0.5*white_key_w;
+               right_rec.height = 0.6*h;
+               right_rec_color = ColorBrightness(black_key_c, 0.75f);
+
+               left_rec.x = i*white_key_w + x + 0.75*white_key_w;
+               left_rec.y = y;
+               left_rec.width = 0.5*white_key_w;
+               left_rec.height = 0.6*h;
+               left_rec_color = ColorBrightness(black_key_c, 0.75f);
+           }
+           DrawRectangleRec(black_key, black_key_c);
+       }
+   }
+
+   DrawRectangleRec(middle_rec, middle_rec_color);
+   DrawRectangleRec(right_rec, right_rec_color);
+   DrawRectangleRec(left_rec, left_rec_color);
+
+   Vector2 frame_p0 = {x, y};
+   Vector2 frame_p1 = {x + w, y };
+   DrawLineV(frame_p0, frame_p1, BLUE);
+
+   Vector2 frame_p2 = {x, y + h - hl};
+   Vector2 frame_p3 = {x + w, y + h - hl};
+   DrawLineV(frame_p2, frame_p3, BLUE);
 }
 
 /*void keyboard_widget(UiRect rect) {
