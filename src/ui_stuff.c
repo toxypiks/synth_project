@@ -270,23 +270,28 @@ void octave_widget(UiRect rect)
 */
 
 
-    Vector2 frame_p0 = {x, y};
-    Vector2 frame_p1 = {x + w, y };
-    DrawLineV(frame_p0, frame_p1, BLUE);
-
     // "white"" keys
     float white_key_w = w/7.0f;
-    for(size_t i = 0; i < 8; ++i){
+    for(size_t i = 0; i < 7; ++i){
+        Vector2 start = {i*white_key_w + x, 0.0f + y};
+        Vector2 size = {white_key_w, h + y};
+
+        DrawRectangleV(start, size, WHITE);
         Vector2 p0 = {i*white_key_w + x, 0.0f + y};
         Vector2 p1 = {i*white_key_w + x, 1.0f * h + y };
 
-        DrawLineV(p0, p1, BLUE);
+        DrawLineV(p0, p1, BLACK);
     }
+
+    Vector2 frame_p0 = {x, y};
+    Vector2 frame_p1 = {x + w, y };
+    DrawLineV(frame_p0, frame_p1, BLACK);
+
     for(size_t i = 0; i < 6; ++i){
         if(i != 2){
             Vector2 p0 = {i*white_key_w + x + 0.75*white_key_w, y};
             Vector2 size = {0.5*white_key_w , 0.6*h};
-            DrawRectangleV(p0, size, BLUE);
+            DrawRectangleV(p0, size, BLACK);
         }
     }
     Vector2 frame_p2 = {x, y + h - hl};
