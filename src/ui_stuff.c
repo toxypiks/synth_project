@@ -284,46 +284,45 @@ void octave_widget(UiRect rect)
    black_key.width = 0.5*white_key_w;
    black_key.height = 0.6*h;
 
-   Rectangle middle_rec = {0};
-   Color middle_rec_color;
-
-   Rectangle right_rec = {0};
-   Color right_rec_color;
-
-   Rectangle left_rec = {0};
-   Color left_rec_color;
-
-   Vector2 mouse_position = {-1, -1};
+   size_t key_index = 0;
+   size_t collision_key = -1;
+   Vector2 mouse_position = {-1.0, -1.0};
 
    if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
        mouse_position = GetMousePosition();
    }
 
-   // "white"" keys
+   // "white" keys
    for(size_t i = 0; i < 7; ++i) {
        white_key.x =  i*white_key_w + x;
        if (CheckCollisionPointRec(mouse_position, white_key)) {
-           middle_rec_color = ColorBrightness(white_key_c, 0.75f);
-           middle_rec.x = i*white_key_w + x;
-           middle_rec.y = 0.0f + y;
-           middle_rec.width = white_key_w;
-           middle_rec.height = h + y;
-           right_rec_color = BLUE;
-           left_rec_color = BLUE;
-           if(i < 6 && i != 2) {
-               right_rec.x = i*white_key_w + x + 0.75*white_key_w;
-               right_rec.y = y;
-               right_rec.width = 0.5*white_key_w;
-               right_rec.height = 0.6*h;
-           }
-           if(i != 3) {
-               left_rec.x = (i-1)*white_key_w + x + 0.75*white_key_w;
-               left_rec.y = y;
-               left_rec.width = 0.5*white_key_w;
-               left_rec.height = 0.6*h;
-           }
+           collision_key = key_index;
        }
-       DrawRectangleRec(white_key, white_key_c);
+       ++key_index;
+   }
+
+   // "black" keys
+   for(size_t i = 0; i < 6; ++i){
+       if(i != 2){
+           black_key.x = i*white_key_w + x + 0.75*white_key_w;
+           if (CheckCollisionPointRec(mouse_position, black_key)) {
+               collision_key = key_index;
+           }
+           ++key_index;
+       }
+   }
+
+   key_index = 0;
+
+   // Drawing keys
+   for(size_t i = 0; i < 7; ++i) {
+       white_key.x =  i*white_key_w + x;
+       if(key_index == collision_key) {
+           DrawRectangleRec(white_key, RED);
+       } else {
+           DrawRectangleRec(white_key, white_key_c);
+       }
+       ++key_index;
    }
 
    for(size_t i = 0; i < 8; ++i) {
@@ -332,35 +331,17 @@ void octave_widget(UiRect rect)
        DrawLineV(p0, p1, BLUE);
    }
 
-   for(size_t i = 0; i < 6; ++i){
-       if(i != 2){
+   for(size_t i = 0; i < 6; ++i) {
+       if(i != 2) {
            black_key.x = i*white_key_w + x + 0.75*white_key_w;
-           if (CheckCollisionPointRec(mouse_position, black_key)) {
-               middle_rec_color = ColorBrightness(black_key_c, 0.75f);
-               middle_rec.x = i*white_key_w + x + 0.75*white_key_w;
-               middle_rec.y = y;
-               middle_rec.width = 0.5*white_key_w;
-               middle_rec.height = 0.6*h;
-
-               right_rec.x = i*white_key_w + x + 0.75*white_key_w;
-               right_rec.y = y;
-               right_rec.width = 0.5*white_key_w;
-               right_rec.height = 0.6*h;
-               right_rec_color = ColorBrightness(black_key_c, 0.75f);
-
-               left_rec.x = i*white_key_w + x + 0.75*white_key_w;
-               left_rec.y = y;
-               left_rec.width = 0.5*white_key_w;
-               left_rec.height = 0.6*h;
-               left_rec_color = ColorBrightness(black_key_c, 0.75f);
+           if(key_index == collision_key) {
+               DrawRectangleRec(black_key, GREEN);
+           } else {
+              DrawRectangleRec(black_key, black_key_c);
            }
-           DrawRectangleRec(black_key, black_key_c);
+           ++key_index;
        }
    }
-
-   DrawRectangleRec(middle_rec, middle_rec_color);
-   DrawRectangleRec(right_rec, right_rec_color);
-   DrawRectangleRec(left_rec, left_rec_color);
 
    Vector2 frame_p0 = {x, y};
    Vector2 frame_p1 = {x + w, y };
