@@ -63,11 +63,10 @@ int main(void) {
     while(!WindowShouldClose()) {
         msg_hdling(&msg_hdl, &thread_stuff->raylib_msg_queue);
 
-        size_t num_bytes = jack_ringbuffer_read_space(jack_stuff->ringbuffer_audio);
         // TODO ~Setter for text ->better update for ui_stuff
         // TODO Seperate value for label from actual parameter for change frequency
-        key_freq = 440.0*pow(2.0, (key - 9.0)/12.0);
-       // ui_stuff->text.freq = 50.0 + 1000.0 * ui_stuff->slider_freq.scroll;
+        key_freq = 440.0 * pow(2.0, (key - 9.0)/12.0);
+        // ui_stuff->text.freq = 50.0 + 1000.0 * ui_stuff->slider_freq.scroll;
         ui_stuff->text.freq = key_freq;
         ui_stuff->text.vol = 1.0 * ui_stuff->slider_vol.scroll;
 
@@ -82,7 +81,7 @@ int main(void) {
         // send messages through msg_queue
         int ret_vol = lf_queue_push(&thread_stuff->model_msg_queue, "vol", (void*)&ui_stuff->text.vol, sizeof(float));
 
-        int ret_freq = lf_queue_push(&thread_stuff->model_msg_queue, "freq", (void*)&ui_stuff->text.freq, sizeof(float));
+        int ret_freq = lf_queue_push(&thread_stuff->model_msg_queue, "freq", (void*)&key_freq, sizeof(float));
 
         int ret_is_play_pressed = lf_queue_push(&thread_stuff->model_msg_queue, "is_play_pressed", (void*)&is_play_pressed, sizeof(bool));
 
@@ -90,6 +89,7 @@ int main(void) {
         if(jack_stuff->ringbuffer_video){
             float output_buffer[1024];
             size_t num_bytes = jack_ringbuffer_read_space(jack_stuff->ringbuffer_video);
+            printf("full vid: %d\n",num_bytes);
             if(num_bytes >= (1024* sizeof(float))) {
 
                 jack_ringbuffer_read(jack_stuff->ringbuffer_video, (char*)output_buffer, 1024 * sizeof(float));
@@ -118,10 +118,10 @@ int main(void) {
         layout_stack_pop(&ls);
         signal_widget(layout_stack_slot(&ls), &ray_out_buffer, BLUE);
         layout_stack_push(&ls, LO_HORZ, layout_stack_slot(&ls), 3, 0);
-        slider_widget(layout_stack_slot(&ls), &ui_stuff->slider_vol);
-        //adsr_widget(layout_stack_slot(&ls), &ui_stuff->adsr, adsr_height, adsr_length);
+        adsr_widget(layout_stack_slot(&ls), &ui_stuff->adsr, adsr_height, adsr_length);
         octave_widget(layout_stack_slot(&ls), &key, &is_play_pressed);
-        slider_widget(layout_stack_slot(&ls), &ui_stuff->slider_freq);
+        slider_widget(layout_stack_slot(&ls), &ui_stuff->slider_vol);
+        //slider_widget(layout_stack_slot(&ls), &ui_stuff->slider_freq);
 
         layout_stack_pop(&ls);
         layout_stack_pop(&ls);

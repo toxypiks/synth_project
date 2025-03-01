@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <rlgl.h>
+#include "helpers.h"
 
 UiRect ui_rect(float x, float y, float w, float h) {
   UiRect r = {0};
@@ -182,7 +183,8 @@ void signal_widget(UiRect r, RayOutBuffer *ray_out_buffer, Color c)
   }
 }
 
-void adsr_display_widget(UiRect rect, UiADSR *adsr, Color c, float adsr_height, float adsr_width) {
+void adsr_display_widget(UiRect rect, UiADSR *adsr, Color c, float adsr_height, float adsr_width_raw) {
+  float adsr_width = MIN(adsr_width_raw, 1.0);
   float x = rect.x;
   float y = rect.y;
   float w = rect.w;

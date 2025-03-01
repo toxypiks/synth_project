@@ -40,6 +40,7 @@ void* model_gen_signal_thread_fct(void* thread_stuff_raw)
 
     while(thread_stuff->is_running) {
         msg_hdling(&msg_hdl, &thread_stuff->model_msg_queue);
+        printf("full vol: %f, attack: %f pla:%d\n", vol, adsr_values.attack, is_play_pressed);
 
         size_t num_bytes = jack_ringbuffer_read_space(thread_stuff->jack_stuff->ringbuffer_audio);
         float data_buf[1024];
@@ -54,6 +55,7 @@ void* model_gen_signal_thread_fct(void* thread_stuff_raw)
                                         adsr_values.release,
                                         is_play_pressed);
 
+            printf("2full vol: %f, attack: %f pla:%d\n", vol, adsr_values.attack, is_play_pressed);
             synth_model_update(synth_model,
                                data_buf,
                                vol,
@@ -66,9 +68,14 @@ void* model_gen_signal_thread_fct(void* thread_stuff_raw)
             int ret_adsr_length = lf_queue_push(&thread_stuff->raylib_msg_queue, "adsr_length", (void*)&adsr_length, sizeof(float));
 
             jack_ringbuffer_write(thread_stuff->jack_stuff->ringbuffer_audio, (void *)data_buf, 1024*sizeof(float));
+            size_t num_bytes = jack_ringbuffer_read_space(thread_stuff->jack_stuff->ringbuffer_video);
+            printf("full %d\n", num_bytes);
             jack_ringbuffer_write(thread_stuff->jack_stuff->ringbuffer_video, (void *)data_buf, 1024*sizeof(float));
+            num_bytes = jack_ringbuffer_read_space(thread_stuff->jack_stuff->ringbuffer_video);
+            printf("2full %d\n", num_bytes);
+
         } else {
-            usleep(4680);
+            usleep(2000);
         }
     }
     synth_model_clear(synth_model);
