@@ -57,13 +57,18 @@ int main(void) {
     msg_hdl_add_key2fct(&msg_hdl, "adsr_height", set_float_value, (void*)&adsr_height);
     msg_hdl_add_key2fct(&msg_hdl, "adsr_length", set_float_value, (void*)&adsr_length);
 
+    size_t key = -1;
+    float key_freq = 0;
+
     while(!WindowShouldClose()) {
         msg_hdling(&msg_hdl, &thread_stuff->raylib_msg_queue);
 
         size_t num_bytes = jack_ringbuffer_read_space(jack_stuff->ringbuffer_audio);
         // TODO ~Setter for text ->better update for ui_stuff
         // TODO Seperate value for label from actual parameter for change frequency
-        ui_stuff->text.freq = 50.0 + 1000.0 * ui_stuff->slider_freq.scroll;
+        key_freq = 440.0*pow(2.0, (key - 9.0)/12.0);
+       // ui_stuff->text.freq = 50.0 + 1000.0 * ui_stuff->slider_freq.scroll;
+        ui_stuff->text.freq = key_freq;
         ui_stuff->text.vol = 1.0 * ui_stuff->slider_vol.scroll;
 
         ADSR adsr_msg = {
@@ -115,8 +120,9 @@ int main(void) {
         layout_stack_push(&ls, LO_HORZ, layout_stack_slot(&ls), 3, 0);
         slider_widget(layout_stack_slot(&ls), &ui_stuff->slider_vol);
         //adsr_widget(layout_stack_slot(&ls), &ui_stuff->adsr, adsr_height, adsr_length);
-        octave_widget(layout_stack_slot(&ls));
+        octave_widget(layout_stack_slot(&ls), &key, &is_play_pressed);
         slider_widget(layout_stack_slot(&ls), &ui_stuff->slider_freq);
+
         layout_stack_pop(&ls);
         layout_stack_pop(&ls);
         EndTextureMode();

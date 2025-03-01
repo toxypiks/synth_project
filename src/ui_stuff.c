@@ -251,7 +251,7 @@ void adsr_widget(UiRect rect, UiADSR *adsr, float adsr_height, float adsr_width)
   layout_stack_pop(&ls);
 }
 
-void octave_widget(UiRect rect)
+void octave_widget(UiRect rect, size_t* key, bool* pressed)
 {
     float x = rect.x;
     float y = rect.y;
@@ -261,13 +261,26 @@ void octave_widget(UiRect rect)
     /*
  ___________________________
 |  | | | |  |  | | | | | |  |
-|  | | | |  |  | | | | | |  |
-|  | | | |  |  | | | | | |  |
+|  | | | |  |  | | | | |1|  |
+|  |1| |3|  |  |6| |8| |0|  |
 |  |_| |_|  |  |_| |_| |_|  |
 |   |   |   |   |   |   |   |
-|   |   |   |   |   |   |   |
+| 0 | 2 | 4 | 5 | 7 | 9 | 11|
 |___|___|___|___|___|___|___|
 */
+   size_t key_lookup[12];
+   key_lookup[0] = 0;
+   key_lookup[1] = 2;
+   key_lookup[2] = 4;
+   key_lookup[3] = 5;
+   key_lookup[4] = 7;
+   key_lookup[5] = 9;
+   key_lookup[6] = 11;
+   key_lookup[7] = 1;
+   key_lookup[8] = 3;
+   key_lookup[9] = 6;
+   key_lookup[10] = 8;
+   key_lookup[11] = 10;
 
    Rectangle white_key = {0};
    Color white_key_c = BLACK;
@@ -350,6 +363,14 @@ void octave_widget(UiRect rect)
    Vector2 frame_p2 = {x, y + h - hl};
    Vector2 frame_p3 = {x + w, y + h - hl};
    DrawLineV(frame_p2, frame_p3, BLUE);
+
+   if (collision_key == -1) {
+       *key = 0;
+       *pressed = false;
+   } else {
+       *key = key_lookup[collision_key];
+       *pressed = true;
+   }
 }
 
 /*void keyboard_widget(UiRect rect) {
