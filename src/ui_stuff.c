@@ -79,6 +79,12 @@ void layout_stack_push(LayoutStack *ls, LayoutOrient orient, UiRect rect, size_t
   da_append(ls, l);
 }
 
+void layout_stack_delete(LayoutStack *ls){
+    ls->capacity = 0;
+    ls->count = 0;
+    free(ls->items);
+}
+
 void widget(UiRect r, Color c) { DrawRectangle(r.x, r.y, r.w, r.h, c); }
 
 void slider_widget(UiRect r, SliderState *slider_state) {
@@ -251,6 +257,7 @@ void adsr_widget(UiRect rect, UiADSR *adsr, float adsr_height, float adsr_width)
   slider_widget(layout_stack_slot(&ls), &(adsr->release));
   layout_stack_pop(&ls);
   layout_stack_pop(&ls);
+  layout_stack_delete(&ls);
 }
 
 void octave_widget(UiRect rect, size_t* key, bool* pressed)

@@ -151,6 +151,7 @@ int main(void) {
             ui_stuff->adsr.release.scroll = 0.2;
         }
     }
+    layout_stack_delete(&ls);
     CloseWindow();
     ffmpeg_end_rendering(&ffmpeg_stuff);
 

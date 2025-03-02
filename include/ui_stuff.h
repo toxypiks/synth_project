@@ -7,25 +7,27 @@
 #include "ray_out_buffer.h"
 
 #define DA_INIT_CAP 256
-#define da_append(da, item)                                                    \
-  do {                                                                         \
-    if ((da)->count >= (da)->capacity) {                                       \
-      (da)->capacity = (da)->capacity == 0 ? DA_INIT_CAP : (da)->capacity * 2; \
-      (da)->items =                                                            \
-          realloc((da)->items, (da)->capacity * sizeof(*(da)->items));         \
-      assert((da)->items != NULL && "Buy more RAM lol");                       \
-    }                                                                          \
-                                                                               \
-    (da)->items[(da)->count++] = (item);                                       \
+#define da_append(da, item)                                                      \
+  do {                                                                           \
+    printf("realloc1 called %d %d\n",(da)->capacity, (da)->count);               \
+    if ((da)->count >= (da)->capacity) {                                         \
+      (da)->capacity = ((da)->capacity == 0) ? DA_INIT_CAP : (da)->capacity * 2; \
+      (da)->items =                                                              \
+          realloc((da)->items, (da)->capacity * sizeof(*(da)->items));           \
+          printf("realloc2 called %d %d\n",(da)->capacity, (da)->count);         \
+      assert((da)->items != NULL && "Buy more RAM lol");                         \
+    }                                                                            \
+                                                                                 \
+    (da)->items[(da)->count++] = (item);                                         \
   } while (0)
 
-#define layout_stack_slot(ls)                                                  \
-  (assert((ls)->count > 0),                                                    \
+#define layout_stack_slot(ls)                                                    \
+  (assert((ls)->count > 0),                                                      \
    layout_slot_loc(&(ls)->items[(ls)->count - 1], __FILE__, __LINE__))
-#define layout_stack_pop(ls)                                                   \
-  do {                                                                         \
-    assert((ls)->count > 0);                                                   \
-    (ls)->count -= 1;                                                          \
+#define layout_stack_pop(ls)                                                     \
+  do {                                                                           \
+    assert((ls)->count > 0);                                                     \
+    (ls)->count -= 1;                                                            \
   } while (0)
 
 typedef struct UiRect {
@@ -91,7 +93,7 @@ void ui_stuff_clear(UiStuff*);
 UiRect ui_rect(float x, float y, float w, float h);
 UiRect layout_slot_loc(Layout *l, const char *file_path, int line);
 void layout_stack_push(LayoutStack *ls, LayoutOrient orient, UiRect rect, size_t count, float gap);
-
+void layout_stack_delete(LayoutStack *ls);
 void widget(UiRect r, Color c);
 void slider_widget(UiRect r, SliderState *slider_state);
 void start_button_widget(UiRect r, Color c, bool *is_pressed);
