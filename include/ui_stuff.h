@@ -9,12 +9,10 @@
 #define DA_INIT_CAP 256
 #define da_append(da, item)                                                      \
   do {                                                                           \
-    printf("realloc1 called %d %d\n",(da)->capacity, (da)->count);               \
     if ((da)->count >= (da)->capacity) {                                         \
       (da)->capacity = ((da)->capacity == 0) ? DA_INIT_CAP : (da)->capacity * 2; \
       (da)->items =                                                              \
           realloc((da)->items, (da)->capacity * sizeof(*(da)->items));           \
-          printf("realloc2 called %d %d\n",(da)->capacity, (da)->count);         \
       assert((da)->items != NULL && "Buy more RAM lol");                         \
     }                                                                            \
                                                                                  \
