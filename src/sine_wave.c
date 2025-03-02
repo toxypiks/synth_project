@@ -88,18 +88,13 @@ int main(void) {
 
         if(jack_stuff->ringbuffer_video){
             float output_buffer[1024];
-            size_t num_bytes = jack_ringbuffer_read_space(jack_stuff->ringbuffer_video);
 
+            size_t num_bytes = jack_ringbuffer_read_space(jack_stuff->ringbuffer_video);
             if(num_bytes >= (1024* sizeof(float))) {
 
                 jack_ringbuffer_read(jack_stuff->ringbuffer_video, (char*)output_buffer, 1024 * sizeof(float));
-            } else {
-                for ( int i = 0; i < 1024; i++)
-                {
-                    output_buffer[i] = 0.0;
-                }
+                copy_to_ray_out_buffer(&ray_out_buffer, output_buffer, 1024);
             }
-            copy_to_ray_out_buffer(&ray_out_buffer, output_buffer, 1024);
         }
 
         float w = GetRenderWidth();
@@ -112,9 +107,9 @@ int main(void) {
 
         layout_stack_push(&ls, LO_VERT, ui_rect(0, 0, w, h), 3, 0);
         layout_stack_push(&ls, LO_HORZ, layout_stack_slot(&ls), 3, 0);
-        start_button_widget(layout_stack_slot(&ls), PINK, &is_play_pressed);
         reset_button_widget(layout_stack_slot(&ls), PINK, &is_reset_pressed);
         text_widget(layout_stack_slot(&ls), &ui_stuff->text);
+        // empty widget
         layout_stack_pop(&ls);
         signal_widget(layout_stack_slot(&ls), &ray_out_buffer, BLUE);
         layout_stack_push(&ls, LO_HORZ, layout_stack_slot(&ls), 3, 0);
