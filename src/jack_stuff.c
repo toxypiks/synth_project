@@ -3,7 +3,7 @@
 int process(jack_nframes_t nframes, void* jack_stuff_raw)
 {
   JackStuff* jack_stuff = (JackStuff*)jack_stuff_raw;
-  float* output_buffer= (float*)jack_port_get_buffer (jack_stuff->output_port, nframes);
+  float* output_buffer = (float*)jack_port_get_buffer (jack_stuff->output_port, nframes);
 
   if(jack_stuff->ringbuffer_audio){ // is buffer even there?
     // see if theres enough data in buffer to read nframes out of it (num_bytes >nframes)

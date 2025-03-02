@@ -37,10 +37,8 @@ void* model_gen_signal_thread_fct(void* thread_stuff_raw)
     msg_hdl_add_key2fct(&msg_hdl, "vol", set_float_value, (void*)&vol);
     msg_hdl_add_key2fct(&msg_hdl, "freq", set_float_value, (void*)&freq);
     msg_hdl_add_key2fct(&msg_hdl, "is_play_pressed", set_bool_value, (void*)&is_play_pressed);
-
     while(thread_stuff->is_running) {
         msg_hdling(&msg_hdl, &thread_stuff->model_msg_queue);
-        printf("full vol: %f, attack: %f pla:%d\n", vol, adsr_values.attack, is_play_pressed);
 
         size_t num_bytes = jack_ringbuffer_read_space(thread_stuff->jack_stuff->ringbuffer_audio);
         float data_buf[1024];
@@ -55,25 +53,20 @@ void* model_gen_signal_thread_fct(void* thread_stuff_raw)
                                         adsr_values.release,
                                         is_play_pressed);
 
-            printf("2full vol: %f, attack: %f pla:%d\n", vol, adsr_values.attack, is_play_pressed);
             synth_model_update(synth_model,
                                data_buf,
                                vol,
                                freq,
                                &adsr_height,
                                &adsr_length);
-
             // TODO msg send in better function
             int ret_adsr_height = lf_queue_push(&thread_stuff->raylib_msg_queue, "adsr_height", (void*)&adsr_height, sizeof(float));
             int ret_adsr_length = lf_queue_push(&thread_stuff->raylib_msg_queue, "adsr_length", (void*)&adsr_length, sizeof(float));
 
             jack_ringbuffer_write(thread_stuff->jack_stuff->ringbuffer_audio, (void *)data_buf, 1024*sizeof(float));
             size_t num_bytes = jack_ringbuffer_read_space(thread_stuff->jack_stuff->ringbuffer_video);
-            printf("full %d\n", num_bytes);
             jack_ringbuffer_write(thread_stuff->jack_stuff->ringbuffer_video, (void *)data_buf, 1024*sizeof(float));
             num_bytes = jack_ringbuffer_read_space(thread_stuff->jack_stuff->ringbuffer_video);
-            printf("2full %d\n", num_bytes);
-
         } else {
             usleep(2000);
         }

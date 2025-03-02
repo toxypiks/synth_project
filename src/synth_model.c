@@ -7,8 +7,8 @@
 SynthModel* create_synth_model() {
   SynthModel* synth_model = (SynthModel*)malloc(sizeof(SynthModel));
   memset(synth_model->osc.amp, 1.0f, 1024);
-  synth_model->osc.freq = 440;
-  synth_model->osc.phase = 0;
+  synth_model->osc.freq = 440.0;
+  synth_model->osc.phase = 0.0;
 
   //TODO: init osc and envelop
   return synth_model;

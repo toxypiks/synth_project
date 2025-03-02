@@ -57,7 +57,7 @@ int main(void) {
     msg_hdl_add_key2fct(&msg_hdl, "adsr_height", set_float_value, (void*)&adsr_height);
     msg_hdl_add_key2fct(&msg_hdl, "adsr_length", set_float_value, (void*)&adsr_length);
 
-    size_t key = -1;
+    size_t key = 0;
     float key_freq = 0;
 
     while(!WindowShouldClose()) {
@@ -89,7 +89,7 @@ int main(void) {
         if(jack_stuff->ringbuffer_video){
             float output_buffer[1024];
             size_t num_bytes = jack_ringbuffer_read_space(jack_stuff->ringbuffer_video);
-            printf("full vid: %d\n",num_bytes);
+
             if(num_bytes >= (1024* sizeof(float))) {
 
                 jack_ringbuffer_read(jack_stuff->ringbuffer_video, (char*)output_buffer, 1024 * sizeof(float));
