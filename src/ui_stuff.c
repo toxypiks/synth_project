@@ -195,10 +195,10 @@ void adsr_display_widget(UiRect rect, UiADSR *adsr, Color c, float adsr_height, 
   float y = rect.y;
   float w = rect.w;
   float h = rect.h;
-  float sum = adsr->attack.scroll + adsr->decay.scroll + adsr->sustain.scroll + adsr->release.scroll;
+  float sum = adsr->attack.scroll + adsr->decay.scroll + 0.5 + adsr->release.scroll;
   float al  = adsr->attack.scroll / sum;
   float dl  = adsr->decay.scroll/sum;
-  float sl  = adsr->sustain.scroll / sum;
+  float sl  = 0.5 / sum;
   float rl  = adsr->release.scroll / sum;
   float s   = adsr->sustain.scroll;
   Vector2 p0 = {0.0f + x         , 1.0f * h + y};
