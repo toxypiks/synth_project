@@ -43,7 +43,7 @@ void synth_model_update(SynthModel* synth_model,
   {
     *adsr_length = (sum_ads/(sum_adsr));
   } else if (synth_model->adsr_envelop.envelop_state == RELEASED) {
-    *adsr_length =  synth_model->adsr_envelop.attack + synth_model->adsr_envelop.decay + 0.5 + (synth_model->adsr_envelop.sample_count_release / (48000.0f * synth_model->adsr_envelop.release));
+    *adsr_length =  synth_model->adsr_envelop.attack + synth_model->adsr_envelop.decay + 0.5 + (synth_model->adsr_envelop.sample_count_release / (48000.0f));
   }
 }
 
@@ -54,12 +54,9 @@ void synth_model_envelope_update(SynthModel* synth_model,
                                  float release,
                                  bool is_triggered)
 {
-  // TODO: signal state via ringbuffer
-  synth_model->adsr_envelop.attack  = attack;
-  synth_model->adsr_envelop.decay   = decay;
-  synth_model->adsr_envelop.sustain = sustain;
-  synth_model->adsr_envelop.release = release;
-  envelop_trigger(&synth_model->adsr_envelop,is_triggered);
+    // TODO: signal state via ringbuffer
+    envelop_change_adsr(&synth_model->adsr_envelop,attack, decay, sustain, release);
+    envelop_trigger(&synth_model->adsr_envelop,is_triggered);
 }
 
 

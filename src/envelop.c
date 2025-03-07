@@ -37,7 +37,7 @@ void envelop_apply_in_buf(Envelop *envelop, float* buf, size_t buf_length)
   float attack_step_size = 1.0f/(48000.0f * envelop->attack);
   float decay_step_size = -1.0f/(48000.0f * envelop->decay);
   float sustain_step_size = 0.0f;
-  float release_step_size = -1.0f/(48000.0f * envelop->release);
+  float release_step_size = -1.0f*envelop->sustain/(48000.0f * envelop->release);
 
   float step_size[4] = {attack_step_size, decay_step_size, sustain_step_size, release_step_size};
   // TODO! overthink current_value and envelop->current_value
@@ -73,10 +73,10 @@ void envelop_apply_in_buf(Envelop *envelop, float* buf, size_t buf_length)
           if(current_value <= 0.00000001f) {
               envelop->envelop_state = DEFAULT;
               envelop->sample_count = 0;
-          envelop->sample_count_release = 0;
+              envelop->sample_count_release = 0;
         } else {
-          envelop->sample_count += 1;
-          envelop->sample_count_release += 1;
+            envelop->sample_count += 1;
+            envelop->sample_count_release += 1;
         }
       }
   } else {
