@@ -30,6 +30,7 @@ void envelop_change_adsr(Envelop *envelop, float attack, float decay, float sust
   envelop->decay = dl;
   envelop->sustain = sustain;
   envelop->release = rl;
+  envelop->sustain_length = sl;
 }
 
 void envelop_apply_in_buf(Envelop *envelop, float* buf, size_t buf_length)

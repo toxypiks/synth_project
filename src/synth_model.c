@@ -29,21 +29,23 @@ void synth_model_update(SynthModel* synth_model,
   *adsr_current_value = synth_model->adsr_envelop.current_value;
 
   // calculate adsr x,y0,y1 values
-  sum_ads = 48000.0f *(synth_model->adsr_envelop.attack + synth_model->adsr_envelop.decay + 0.5);
-  sum_adsr = 48000.0f *(synth_model->adsr_envelop.attack + synth_model->adsr_envelop.decay + 0.5 + synth_model->adsr_envelop.release);
+  sum_ads = (synth_model->adsr_envelop.attack + synth_model->adsr_envelop.decay + synth_model->adsr_envelop.sustain_length);
 
-  if((synth_model->adsr_envelop.sample_count < sum_ads) && (synth_model->adsr_envelop.envelop_state ==  PRESSED_ATTACK
+  if((synth_model->adsr_envelop.sample_count < sum_ads*48000.0f) && (synth_model->adsr_envelop.envelop_state ==  PRESSED_ATTACK
                                                             || synth_model->adsr_envelop.envelop_state == PRESSED_DECAY
                                                             || synth_model->adsr_envelop.envelop_state == PRESSED_SUSTAIN))
   {
-    *adsr_length = synth_model->adsr_envelop.sample_count/ (sum_adsr);
-  } else if ((synth_model->adsr_envelop.sample_count > sum_adsr) && synth_model->adsr_envelop.envelop_state ==  PRESSED_ATTACK
+    *adsr_length = synth_model->adsr_envelop.sample_count/ 48000.0;
+  } else if ((synth_model->adsr_envelop.sample_count > sum_adsr*48000.0f) && synth_model->adsr_envelop.envelop_state ==  PRESSED_ATTACK
              || synth_model->adsr_envelop.envelop_state == PRESSED_DECAY
              || synth_model->adsr_envelop.envelop_state == PRESSED_SUSTAIN)
   {
-    *adsr_length = (sum_ads/(sum_adsr));
+    *adsr_length = sum_ads;
   } else if (synth_model->adsr_envelop.envelop_state == RELEASED) {
-    *adsr_length =  synth_model->adsr_envelop.attack + synth_model->adsr_envelop.decay + 0.5 + (synth_model->adsr_envelop.sample_count_release / (48000.0f));
+      *adsr_length =  synth_model->adsr_envelop.attack
+                      + synth_model->adsr_envelop.decay
+                      + synth_model->adsr_envelop.sustain_length
+                      + (synth_model->adsr_envelop.sample_count_release / (48000.0f));
   }
 }
 

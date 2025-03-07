@@ -21,6 +21,7 @@ typedef struct Envelop {
   float decay;
   float sustain;
   float release;
+  float sustain_length;
 } Envelop;
 
 void envelop_trigger(Envelop *envelop, bool is_pressed);
