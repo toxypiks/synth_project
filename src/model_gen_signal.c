@@ -59,6 +59,7 @@ void* model_gen_signal_thread_fct(void* thread_stuff_raw)
                                freq,
                                &adsr_height,
                                &adsr_length);
+            printf("model_gen_signal: adsr_length: %f\n",adsr_length);
             // TODO msg send in better function
             int ret_adsr_height = lf_queue_push(&thread_stuff->raylib_msg_queue, "adsr_height", (void*)&adsr_height, sizeof(float));
             int ret_adsr_length = lf_queue_push(&thread_stuff->raylib_msg_queue, "adsr_length", (void*)&adsr_length, sizeof(float));
