@@ -36,7 +36,7 @@ void envelop_change_adsr(Envelop *envelop, float attack, float decay, float sust
 void envelop_apply_in_buf(Envelop *envelop, float* buf, size_t buf_length)
 {
   float attack_step_size = 1.0f/(48000.0f * envelop->attack);
-  float decay_step_size = -1.0f/(48000.0f * envelop->decay);
+  float decay_step_size = -(1.0f-envelop->sustain)/(48000.0f * envelop->decay);
   float sustain_step_size = 0.0f;
   float release_step_size = -1.0f*envelop->sustain/(48000.0f * envelop->release);
 
