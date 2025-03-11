@@ -1,7 +1,7 @@
 #ifndef ADSR_H_
 #define ADSR_H_
 
-typedef struct ADSR{
+typedef struct ADSR {
   float attack;
   float decay;
   float sustain;
