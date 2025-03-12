@@ -21,13 +21,6 @@ void set_adsr_values(void* adsr_new_raw, void* adsr_values_raw)
     //free(adsr_new);
 };
 
-void set_midi_msg(void* midi_msg_new_raw, void* midi_msg_raw)
-{
-    MidiMsg* midi_msg = (MidiMsg*)midi_msg_raw;
-    MidiMsg* midi_msg_new = (MidiMsg*)midi_msg_new_raw;
-    memcpy(midi_msg, midi_msg_new, sizeof(MidiMsg));
-}
-
 void* model_gen_signal_thread_fct(void* thread_stuff_raw)
 {
     ThreadStuff* thread_stuff = (ThreadStuff*)thread_stuff_raw;

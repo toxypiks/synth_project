@@ -65,6 +65,22 @@ target_sources(ray_out_buffer
 target_include_directories(ray_out_buffer
  PRIVATE
  ${INCLUDE}
+)
+
+set(MIDI_MSG_SOURCES
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/midi_msg.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/midi_msg.h
+  )
+
+add_library(midi_msg)
+target_sources(midi_msg
+ PRIVATE
+  ${MIDI_MSG_SOURCES}
+  )
+
+target_include_directories(midi_msg
+ PRIVATE
+ ${INCLUDE}
  )
 
 set(JACK_STUFF_SOURCES
@@ -391,4 +407,5 @@ target_include_directories(model_gen_signal
 target_link_libraries(model_gen_signal
   synth_model
   msg_handler
+  midi_msg
 )
