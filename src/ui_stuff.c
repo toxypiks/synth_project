@@ -260,7 +260,11 @@ void adsr_widget(UiRect rect, UiADSR *adsr, float adsr_height, float adsr_width)
   layout_stack_delete(&ls);
 }
 
-void octave_widget(UiRect rect, size_t* key, bool* pressed)
+void octave_widget(UiRect rect,
+                   size_t* key_out,
+                   bool* pressed_out,
+                   size_t key_in,
+                   bool pressed_in)
 {
     float x = rect.x;
     float y = rect.y;
@@ -290,6 +294,22 @@ void octave_widget(UiRect rect, size_t* key, bool* pressed)
    key_lookup[9] = 6;
    key_lookup[10] = 8;
    key_lookup[11] = 10;
+
+   size_t key_reverse_lookup[12];
+   key_reverse_lookup[0] = 0;
+   key_reverse_lookup[2] = 1;
+   key_reverse_lookup[4] = 2;
+   key_reverse_lookup[5] = 3;
+   key_reverse_lookup[7] = 4;
+   key_reverse_lookup[9] = 5;
+   key_reverse_lookup[11] = 6;
+   key_reverse_lookup[1] = 7;
+   key_reverse_lookup[3] = 8;
+   key_reverse_lookup[6] = 9;
+   key_reverse_lookup[8] = 10;
+   key_reverse_lookup[10] = 11;
+
+   int collision_key_in = key_reverse_lookup[key_in];
 
    Rectangle white_key = {0};
    Color white_key_c = BLACK;
@@ -339,7 +359,7 @@ void octave_widget(UiRect rect, size_t* key, bool* pressed)
    // Drawing keys
    for(size_t i = 0; i < 7; ++i) {
        white_key.x =  i*white_key_w + x;
-       if(key_index == collision_key) {
+       if(key_index == collision_key_in && pressed_in) {
            DrawRectangleRec(white_key, RED);
        } else {
            DrawRectangleRec(white_key, white_key_c);
@@ -356,7 +376,7 @@ void octave_widget(UiRect rect, size_t* key, bool* pressed)
    for(size_t i = 0; i < 6; ++i) {
        if(i != 2) {
            black_key.x = i*white_key_w + x + 0.75*white_key_w;
-           if(key_index == collision_key) {
+           if(key_index == collision_key_in && pressed_in) {
                DrawRectangleRec(black_key, GREEN);
            } else {
               DrawRectangleRec(black_key, black_key_c);
@@ -374,11 +394,11 @@ void octave_widget(UiRect rect, size_t* key, bool* pressed)
    DrawLineV(frame_p2, frame_p3, BLUE);
 
    if (collision_key == -1) {
-       *key = 0;
-       *pressed = false;
+       *key_out = 0;
+       *pressed_out = false;
    } else {
-       *key = key_lookup[collision_key];
-       *pressed = true;
+       *key_out = key_lookup[collision_key];
+       *pressed_out = true;
    }
 }
 

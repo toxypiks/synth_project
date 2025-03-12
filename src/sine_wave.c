@@ -93,7 +93,7 @@ int main(void) {
 
         if (is_virt_keyboard_on != is_virt_keyboard_on_prev) {
             MidiMsg midi_msg_out = {
-                .key  = virt_keyboard_key,
+                .key  = virt_keyboard_key + 60,
                 .vel   = 1.0,
                 .is_on = is_virt_keyboard_on,
                 .time_stamp = 0
@@ -129,7 +129,12 @@ int main(void) {
         layout_stack_push(&ls, LO_HORZ, layout_stack_slot(&ls), 3, 0);
         adsr_widget(layout_stack_slot(&ls), &ui_stuff->adsr, adsr_height, adsr_length);
         is_virt_keyboard_on_prev = is_virt_keyboard_on;
-        octave_widget(layout_stack_slot(&ls), &virt_keyboard_key, &is_virt_keyboard_on);
+        octave_widget(layout_stack_slot(&ls),
+                      &virt_keyboard_key,
+                      &is_virt_keyboard_on,
+                      midi_msg_in.key - 60,
+                      midi_msg_in.is_on);
+
         slider_widget(layout_stack_slot(&ls), &ui_stuff->slider_vol);
         //slider_widget(layout_stack_slot(&ls), &ui_stuff->slider_freq);
 
