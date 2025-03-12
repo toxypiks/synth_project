@@ -46,20 +46,15 @@ int process(jack_nframes_t nframes, void* jack_stuff_raw)
       uint8_t channel = ev.buffer[0] & 0x0f;
       uint8_t param1 = ev.buffer[1] & 0x7f;
       uint8_t param2 = ev.buffer[2] & 0x7f;
-      printf("Midi: statusbyte:%d channel: %d, p1: %d, p2: %d \n", status_byte, channel, param1, param2);
+
       if (status_byte == 8 || status_byte == 9){
         bool is_on = status_byte == 9 ? true : false;
         MidiMsg midi_msg = {
-            .freq  = 440.0 * pow(2.0, (param1 - 69.0)/12.0),
+            .key  = param1,
             .vel   = param2/127.0,
             .is_on = is_on,
             .time_stamp = ev.time
         };
-        printf("MidiMsg: freq: %f vel: %f is_on: %d \n",
-               midi_msg.freq,
-               midi_msg.vel,
-               midi_msg.is_on
-        );
         // queue push
         int ret_midi_msg = lf_queue_push(&jack_stuff->midi_msg_queue, "midi_msg", (void*)&midi_msg, sizeof(MidiMsg));
       }

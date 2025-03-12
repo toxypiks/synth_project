@@ -9,6 +9,7 @@
 #include "adsr.h"
 #include "msg_handler.h"
 #include "midi_msg.h"
+#include <math.h>
 
 void set_adsr_values(void* adsr_new_raw, void* adsr_values_raw)
 {
@@ -62,14 +63,16 @@ void* model_gen_signal_thread_fct(void* thread_stuff_raw)
             synth_model_update(synth_model,
                                data_buf,
                                vol,
-                               //freq,
-                               midi_msg.freq,
+                               // insert key2freq equation here:
+                               440.0 * pow(2.0, (midi_msg.key - 69.0)/12.0),
                                &adsr_height,
                                &adsr_length);
-            // printf("model_gen_signal: adsr_length: %f height: %f state: %d,release: %f\n",adsr_length, adsr_height, synth_model->adsr_envelop.envelop_state, synth_model->adsr_envelop.release);
+
             // TODO msg send in better function
             int ret_adsr_height = lf_queue_push(&thread_stuff->raylib_msg_queue, "adsr_height", (void*)&adsr_height, sizeof(float));
             int ret_adsr_length = lf_queue_push(&thread_stuff->raylib_msg_queue, "adsr_length", (void*)&adsr_length, sizeof(float));
+
+            int ret_midi_msg = lf_queue_push(&thread_stuff->raylib_msg_queue, "midi_msg", (void*)&midi_msg, sizeof(MidiMsg));
 
             jack_ringbuffer_write(thread_stuff->jack_stuff->ringbuffer_audio, (void *)data_buf, 1024*sizeof(float));
             size_t num_bytes = jack_ringbuffer_read_space(thread_stuff->jack_stuff->ringbuffer_video);

@@ -4,7 +4,7 @@
 #include <stddef.h>
 
 typedef struct MidiMsg {
-    float freq;
+    int key;
     float vel;
     bool is_on;
     size_t time_stamp;

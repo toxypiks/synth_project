@@ -50,26 +50,33 @@ int main(void) {
     UiStuff* ui_stuff = create_ui_stuff(screen_width, screen_height);
     LayoutStack ls = {0};
 
-    bool is_virt_key_on = false;
-    bool is_virt_key_on_prev = false;
+    bool is_virt_keyboard_on = false;
+    bool is_virt_keyboard_on_prev = false;
     bool is_reset_pressed = false;
 
     MsgHdl msg_hdl = {0};
+    MidiMsg midi_msg_in = {0};
 
     msg_hdl_add_key2fct(&msg_hdl, "adsr_height", set_float_value, (void*)&adsr_height);
     msg_hdl_add_key2fct(&msg_hdl, "adsr_length", set_float_value, (void*)&adsr_length);
+    msg_hdl_add_key2fct(&msg_hdl, "midi_msg", set_midi_msg, (void*)&midi_msg_in);
 
-    size_t key = 0;
-    float virt_key_freq = 0;
+    size_t virt_keyboard_key = 0;
+    float virt_keyboard_freq = 0;
 
     while(!WindowShouldClose()) {
         msg_hdling(&msg_hdl, &thread_stuff->raylib_msg_queue);
+        printf("MidiMsg: key: %d vel: %f is_on: %d \n",
+               midi_msg_in.key,
+               midi_msg_in.vel,
+               midi_msg_in.is_on
+        );
 
         // TODO ~Setter for text ->better update for ui_stuff
         // TODO Seperate value for label from actual parameter for change frequency
-        virt_key_freq = 440.0 * pow(2.0, (key - 9.0)/12.0);
+        virt_keyboard_freq = 440.0 * pow(2.0, (virt_keyboard_key - 9.0)/12.0);
         // ui_stuff->text.freq = 50.0 + 1000.0 * ui_stuff->slider_freq.scroll;
-        ui_stuff->text.freq = virt_key_freq;
+        ui_stuff->text.freq = virt_keyboard_freq;
         ui_stuff->text.vol = 1.0 * ui_stuff->slider_vol.scroll;
 
         ADSR adsr_msg = {
@@ -84,14 +91,14 @@ int main(void) {
 
         int ret_vol = lf_queue_push(&thread_stuff->model_msg_queue, "vol", (void*)&ui_stuff->text.vol, sizeof(float));
 
-        if (is_virt_key_on != is_virt_key_on_prev) {
-            MidiMsg midi_msg = {
-                .freq  = virt_key_freq,
+        if (is_virt_keyboard_on != is_virt_keyboard_on_prev) {
+            MidiMsg midi_msg_out = {
+                .key  = virt_keyboard_key,
                 .vel   = 1.0,
-                .is_on = is_virt_key_on,
+                .is_on = is_virt_keyboard_on,
                 .time_stamp = 0
             };
-            int ret_midi_msg = lf_queue_push(&thread_stuff->model_msg_queue, "midi_msg", (void*)&midi_msg, sizeof(MidiMsg));
+            int ret_midi_msg = lf_queue_push(&thread_stuff->model_msg_queue, "midi_msg", (void*)&midi_msg_out, sizeof(MidiMsg));
         }
 
         if (jack_stuff->ringbuffer_video) {
@@ -121,8 +128,8 @@ int main(void) {
         signal_widget(layout_stack_slot(&ls), &ray_out_buffer, BLUE);
         layout_stack_push(&ls, LO_HORZ, layout_stack_slot(&ls), 3, 0);
         adsr_widget(layout_stack_slot(&ls), &ui_stuff->adsr, adsr_height, adsr_length);
-        is_virt_key_on_prev = is_virt_key_on;
-        octave_widget(layout_stack_slot(&ls), &key, &is_virt_key_on);
+        is_virt_keyboard_on_prev = is_virt_keyboard_on;
+        octave_widget(layout_stack_slot(&ls), &virt_keyboard_key, &is_virt_keyboard_on);
         slider_widget(layout_stack_slot(&ls), &ui_stuff->slider_vol);
         //slider_widget(layout_stack_slot(&ls), &ui_stuff->slider_freq);
 
