@@ -39,8 +39,6 @@ void* model_gen_signal_thread_fct(void* thread_stuff_raw)
 
     msg_hdl_add_key2fct(&msg_hdl, "adsr", set_adsr_values, (void*)&adsr_values);
     msg_hdl_add_key2fct(&msg_hdl, "vol", set_float_value, (void*)&vol);
-    msg_hdl_add_key2fct(&msg_hdl, "freq", set_float_value, (void*)&freq);
-    msg_hdl_add_key2fct(&msg_hdl, "is_play_pressed", set_bool_value, (void*)&is_play_pressed);
     msg_hdl_add_key2fct(&msg_hdl, "midi_msg", set_midi_msg, (void*)&midi_msg);
 
     while(thread_stuff->is_running) {

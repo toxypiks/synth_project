@@ -61,7 +61,7 @@ int process(jack_nframes_t nframes, void* jack_stuff_raw)
                midi_msg.is_on
         );
         // queue push
-        int ret_adsr = lf_queue_push(&jack_stuff->midi_msg_queue, "midi_msg", (void*)&midi_msg, sizeof(MidiMsg));
+        int ret_midi_msg = lf_queue_push(&jack_stuff->midi_msg_queue, "midi_msg", (void*)&midi_msg, sizeof(MidiMsg));
       }
     }
   }

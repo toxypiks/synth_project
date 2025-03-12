@@ -14,6 +14,7 @@
 #include "adsr.h"
 #include "lf_queue.h"
 #include "msg_handler.h"
+#include "midi_msg.h"
 
 int main(void) {
 
@@ -49,7 +50,8 @@ int main(void) {
     UiStuff* ui_stuff = create_ui_stuff(screen_width, screen_height);
     LayoutStack ls = {0};
 
-    bool is_play_pressed = false;
+    bool is_virt_key_on = false;
+    bool is_virt_key_on_prev = false;
     bool is_reset_pressed = false;
 
     MsgHdl msg_hdl = {0};
@@ -58,16 +60,16 @@ int main(void) {
     msg_hdl_add_key2fct(&msg_hdl, "adsr_length", set_float_value, (void*)&adsr_length);
 
     size_t key = 0;
-    float key_freq = 0;
+    float virt_key_freq = 0;
 
     while(!WindowShouldClose()) {
         msg_hdling(&msg_hdl, &thread_stuff->raylib_msg_queue);
 
         // TODO ~Setter for text ->better update for ui_stuff
         // TODO Seperate value for label from actual parameter for change frequency
-        key_freq = 440.0 * pow(2.0, (key - 9.0)/12.0);
+        virt_key_freq = 440.0 * pow(2.0, (key - 9.0)/12.0);
         // ui_stuff->text.freq = 50.0 + 1000.0 * ui_stuff->slider_freq.scroll;
-        ui_stuff->text.freq = key_freq;
+        ui_stuff->text.freq = virt_key_freq;
         ui_stuff->text.vol = 1.0 * ui_stuff->slider_vol.scroll;
 
         ADSR adsr_msg = {
@@ -82,10 +84,15 @@ int main(void) {
 
         int ret_vol = lf_queue_push(&thread_stuff->model_msg_queue, "vol", (void*)&ui_stuff->text.vol, sizeof(float));
 
-        int ret_freq = lf_queue_push(&thread_stuff->model_msg_queue, "freq", (void*)&key_freq, sizeof(float));
-
-        int ret_is_play_pressed = lf_queue_push(&thread_stuff->model_msg_queue, "is_play_pressed", (void*)&is_play_pressed, sizeof(bool));
-
+        if (is_virt_key_on != is_virt_key_on_prev) {
+            MidiMsg midi_msg = {
+                .freq  = virt_key_freq,
+                .vel   = 1.0,
+                .is_on = is_virt_key_on,
+                .time_stamp = 0
+            };
+            int ret_midi_msg = lf_queue_push(&thread_stuff->model_msg_queue, "midi_msg", (void*)&midi_msg, sizeof(MidiMsg));
+        }
 
         if (jack_stuff->ringbuffer_video) {
             float output_buffer[1024];
@@ -114,7 +121,8 @@ int main(void) {
         signal_widget(layout_stack_slot(&ls), &ray_out_buffer, BLUE);
         layout_stack_push(&ls, LO_HORZ, layout_stack_slot(&ls), 3, 0);
         adsr_widget(layout_stack_slot(&ls), &ui_stuff->adsr, adsr_height, adsr_length);
-        octave_widget(layout_stack_slot(&ls), &key, &is_play_pressed);
+        is_virt_key_on_prev = is_virt_key_on;
+        octave_widget(layout_stack_slot(&ls), &key, &is_virt_key_on);
         slider_widget(layout_stack_slot(&ls), &ui_stuff->slider_vol);
         //slider_widget(layout_stack_slot(&ls), &ui_stuff->slider_freq);
 
