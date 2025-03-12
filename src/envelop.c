@@ -67,11 +67,11 @@ void envelop_apply_in_buf(Envelop *envelop, float* buf, size_t buf_length)
         step++;
       }
       envelop->sample_count += buf_length;
-  } else if(envelop->envelop_state == RELEASED) {
-      for(size_t i = 0; i < buf_length; i++) {
+  } else if (envelop->envelop_state == RELEASED) {
+      for (size_t i = 0; i < buf_length; ++i) {
           current_value = MAX((i * release_step_size + envelop->current_value), 0.0f);
           buf[i] = current_value * buf[i];
-          if(current_value <= 0.00000001f) {
+          if (current_value <= 0.00000001f) {
               envelop->envelop_state = DEFAULT;
               envelop->sample_count = 0;
               envelop->sample_count_release = 0;
@@ -81,10 +81,9 @@ void envelop_apply_in_buf(Envelop *envelop, float* buf, size_t buf_length)
         }
       }
   } else {
-    for(size_t i = 0; i < buf_length; i++) {
+    for (size_t i = 0; i < buf_length; ++i) {
       buf[i] = 0.0f;
     }
-
   }
   envelop->current_value = current_value;
 }

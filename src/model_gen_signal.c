@@ -10,7 +10,8 @@
 #include "msg_handler.h"
 #include "midi_msg.h"
 
-void set_adsr_values(void* adsr_new_raw, void* adsr_values_raw){
+void set_adsr_values(void* adsr_new_raw, void* adsr_values_raw)
+{
     ADSR* adsr_values = (ADSR*)adsr_values_raw;
     ADSR* adsr_new = (ADSR*)adsr_new_raw;
     adsr_values->attack  = adsr_new->attack;
@@ -20,7 +21,8 @@ void set_adsr_values(void* adsr_new_raw, void* adsr_values_raw){
     //free(adsr_new);
 };
 
-void set_midi_msg(void* midi_msg_new_raw, void* midi_msg_raw){
+void set_midi_msg(void* midi_msg_new_raw, void* midi_msg_raw)
+{
     MidiMsg* midi_msg = (MidiMsg*)midi_msg_raw;
     MidiMsg* midi_msg_new = (MidiMsg*)midi_msg_new_raw;
     memcpy(midi_msg, midi_msg_new, sizeof(MidiMsg));
@@ -63,17 +65,17 @@ void* model_gen_signal_thread_fct(void* thread_stuff_raw)
                                         adsr_values.decay,
                                         adsr_values.sustain,
                                         adsr_values.release,
-                                        // is_play_pressed);
+                                        //is_play_pressed);
                                         midi_msg.is_on);
 
             synth_model_update(synth_model,
                                data_buf,
                                vol,
-                               //  freq,
+                               //freq,
                                midi_msg.freq,
                                &adsr_height,
                                &adsr_length);
-            printf("model_gen_signal: adsr_length: %f height: %f state: %d,release: %f\n",adsr_length, adsr_height, synth_model->adsr_envelop.envelop_state, synth_model->adsr_envelop.release);
+            // printf("model_gen_signal: adsr_length: %f height: %f state: %d,release: %f\n",adsr_length, adsr_height, synth_model->adsr_envelop.envelop_state, synth_model->adsr_envelop.release);
             // TODO msg send in better function
             int ret_adsr_height = lf_queue_push(&thread_stuff->raylib_msg_queue, "adsr_height", (void*)&adsr_height, sizeof(float));
             int ret_adsr_length = lf_queue_push(&thread_stuff->raylib_msg_queue, "adsr_length", (void*)&adsr_length, sizeof(float));

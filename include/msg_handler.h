@@ -10,7 +10,7 @@ typedef struct Key2Fct {
     void* datastruct;
 } Key2Fct;
 
-typedef struct MsgHdl{
+typedef struct MsgHdl {
     Key2Fct key2fct[5];
     size_t nkeys;
 } MsgHdl;

@@ -76,9 +76,10 @@ int main(void) {
             .sustain = ui_stuff->adsr.sustain.scroll,
             .release = ui_stuff->adsr.release.scroll,
         };
-        int ret_adsr = lf_queue_push(&thread_stuff->model_msg_queue, "adsr", (void*)&adsr_msg, sizeof(ADSR));
 
         // send messages through msg_queue
+        int ret_adsr = lf_queue_push(&thread_stuff->model_msg_queue, "adsr", (void*)&adsr_msg, sizeof(ADSR));
+
         int ret_vol = lf_queue_push(&thread_stuff->model_msg_queue, "vol", (void*)&ui_stuff->text.vol, sizeof(float));
 
         int ret_freq = lf_queue_push(&thread_stuff->model_msg_queue, "freq", (void*)&key_freq, sizeof(float));
@@ -86,12 +87,11 @@ int main(void) {
         int ret_is_play_pressed = lf_queue_push(&thread_stuff->model_msg_queue, "is_play_pressed", (void*)&is_play_pressed, sizeof(bool));
 
 
-        if(jack_stuff->ringbuffer_video){
+        if (jack_stuff->ringbuffer_video) {
             float output_buffer[1024];
-
             size_t num_bytes = jack_ringbuffer_read_space(jack_stuff->ringbuffer_video);
-            if(num_bytes >= (1024* sizeof(float))) {
 
+            if (num_bytes >= (1024* sizeof(float))) {
                 jack_ringbuffer_read(jack_stuff->ringbuffer_video, (char*)output_buffer, 1024 * sizeof(float));
                 copy_to_ray_out_buffer(&ray_out_buffer, output_buffer, 1024);
             }
