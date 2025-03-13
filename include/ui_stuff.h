@@ -96,6 +96,7 @@ void widget(UiRect r, Color c);
 void slider_widget(UiRect r, SliderState *slider_state);
 void start_button_widget(UiRect r, Color c, bool *is_pressed);
 void reset_button_widget(UiRect r, Color c, bool *is_pressed);
+void oct_trans_button_widget(UiRect r, int *octave, bool *left_is_pressed, bool *right_is_pressed);
 void signal_widget(UiRect r, RayOutBuffer *ray_out_buffer, Color c);
 void adsr_display_widget(UiRect rect, UiADSR *adsr, Color c, float adsr_height, float adsr_width);
 void adsr_widget(UiRect rect, UiADSR *adsr, float adsr_height, float adsr_width);

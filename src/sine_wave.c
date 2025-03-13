@@ -54,6 +54,8 @@ int main(void) {
     bool is_virt_keyboard_on_prev = false;
     bool is_reset_pressed = false;
 
+    int octave = 3;
+
     MsgHdl msg_hdl = {0};
     MidiMsg midi_msg_in = {0};
 
@@ -66,11 +68,11 @@ int main(void) {
 
     while(!WindowShouldClose()) {
         msg_hdling(&msg_hdl, &thread_stuff->raylib_msg_queue);
-        printf("MidiMsg: key: %d vel: %f is_on: %d \n",
+        /*printf("MidiMsg: key: %d vel: %f is_on: %d \n",
                midi_msg_in.key,
                midi_msg_in.vel,
                midi_msg_in.is_on
-        );
+        );*/
 
         // TODO ~Setter for text ->better update for ui_stuff
         // TODO Seperate value for label from actual parameter for change frequency
@@ -123,7 +125,8 @@ int main(void) {
         layout_stack_push(&ls, LO_HORZ, layout_stack_slot(&ls), 3, 0);
         reset_button_widget(layout_stack_slot(&ls), PINK, &is_reset_pressed);
         text_widget(layout_stack_slot(&ls), &ui_stuff->text);
-        // empty widget
+        // reset_button_widget(layout_stack_slot(&ls), PINK, &is_reset_pressed );
+        oct_trans_button_widget(layout_stack_slot(&ls), &octave, &is_reset_pressed, &is_reset_pressed);
         layout_stack_pop(&ls);
         signal_widget(layout_stack_slot(&ls), &ray_out_buffer, BLUE);
         layout_stack_push(&ls, LO_HORZ, layout_stack_slot(&ls), 3, 0);

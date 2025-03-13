@@ -174,6 +174,88 @@ void reset_button_widget(UiRect r, Color c, bool *is_pressed)
   DrawText(text, button_position.x - button_radius*0.7, button_position.y - button_radius*0.2, 12, c);
 }
 
+void oct_trans_button_widget(UiRect r, int *octave, bool *left_is_pressed, bool *right_is_pressed)
+{
+    Color low_color = {0xFF, 0x00, 0xFF, 0xFF};
+    Color high_color = {0x00, 0x00, 0xFF, 0xFF};
+    high_color.a = floorf(255.f*0.15);
+    Color color1 = ColorAlphaBlend(low_color, high_color, WHITE);
+    high_color.a = floorf(255.f*0.25);
+    Color color2 = ColorAlphaBlend(low_color, high_color, WHITE);
+    high_color.a = floorf(255.f*0.35);
+    Color color3 = ColorAlphaBlend(low_color, high_color, WHITE);
+
+    Color left[7] = { WHITE };
+    left[0] = color1;
+    left[1] = color2;
+    left[2] = color3;
+    left[3] = BLUE;
+    left[4] = BLUE;
+    left[5] = BLUE;
+    left[6] = BLUE;
+    Color right[7] = {WHITE};
+    right[0] = BLUE;
+    right[1] = BLUE;
+    right[2] = BLUE;
+    right[3] = BLUE;
+    right[4] = color3;
+    right[5] = color2;
+    right[6] = color1;
+
+    Rectangle left_button = {0};
+    Rectangle right_button = {0};
+
+    Vector2 left_button_pos = {r.x + r.w/2, r.y + r.h/2};
+    Vector2 right_button_pos = {r.x + r.w/2 + 55, r.y + r.h/2};
+
+    Vector2 inner_size = {47, 23};
+
+    left_button.x = r.x + r.w/2;
+    left_button.y = r.y + r.h/2;
+    left_button.width = 50;
+    left_button.height = 25;
+
+    right_button.x = r.x + r.w/2 + 55;
+    right_button.y = r.y + r.h/2;
+    right_button.width = 50;
+    right_button.height = 25;
+
+    Color left_outer_color = PINK;
+    Color left_inner_color = BLUE;
+
+    Color right_outer_color = PINK;
+    Color right_inner_color = BLUE;
+
+    Vector2 mouse_position = {-1.0, -1.0};
+
+    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+        mouse_position = GetMousePosition();
+
+        if (CheckCollisionPointRec(mouse_position, right_button)) {
+            *right_is_pressed = true;
+            *octave = (*octave >= 6) ? 6 : (*octave + 1);;
+        }
+
+        if (CheckCollisionPointRec(mouse_position, left_button)) {
+            *left_is_pressed = true;
+            *octave = (*octave <= 0) ? 0 : (*octave - 1);
+        }
+    }
+    printf("octave: %d\n", *octave);
+    right_inner_color = right[*octave];
+    right_outer_color = ColorBrightness(right[*octave], -0.5);
+    left_inner_color = left[*octave];
+    left_outer_color = ColorBrightness(left[*octave], -0.5);
+
+    DrawRectangleRec(left_button, left_outer_color);
+    DrawRectangleV(left_button_pos, inner_size, left_inner_color);
+    DrawRectangleRec(right_button, right_outer_color);
+    DrawRectangleV(right_button_pos, inner_size, right_inner_color);
+    const char *text = "oct/trans";
+    float font_size = 5.0f;
+    DrawText(text, left_button_pos.x + 25, left_button_pos.y - 30, font_size, PINK);
+}
+
 void signal_widget(UiRect r, RayOutBuffer *ray_out_buffer, Color c)
 {
   for (size_t i = 0; i < ray_out_buffer->global_frames_count; ++i)
