@@ -54,6 +54,9 @@ int main(void) {
     bool is_virt_keyboard_on_prev = false;
     bool is_reset_pressed = false;
 
+    bool is_right_oct_pressed = false;
+    bool is_left_oct_pressed = false;
+
     int octave = 3;
 
     MsgHdl msg_hdl = {0};
@@ -126,7 +129,7 @@ int main(void) {
         reset_button_widget(layout_stack_slot(&ls), PINK, &is_reset_pressed);
         text_widget(layout_stack_slot(&ls), &ui_stuff->text);
         // reset_button_widget(layout_stack_slot(&ls), PINK, &is_reset_pressed );
-        oct_trans_button_widget(layout_stack_slot(&ls), &octave, &is_reset_pressed, &is_reset_pressed);
+        oct_trans_button_widget(layout_stack_slot(&ls), &octave, &is_left_oct_pressed, &is_right_oct_pressed);
         layout_stack_pop(&ls);
         signal_widget(layout_stack_slot(&ls), &ray_out_buffer, BLUE);
         layout_stack_push(&ls, LO_HORZ, layout_stack_slot(&ls), 3, 0);
