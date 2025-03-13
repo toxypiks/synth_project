@@ -64,7 +64,7 @@ void* model_gen_signal_thread_fct(void* thread_stuff_raw)
                                data_buf,
                                vol,
                                // insert key2freq equation here:
-                               440.0 * pow(2.0, (midi_msg.key - 69.0)/12.0),
+                               440.0 * pow(2.0, (midi_msg.key - 33.0)/12.0),
                                &adsr_height,
                                &adsr_length);
 

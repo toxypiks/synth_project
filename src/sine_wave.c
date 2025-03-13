@@ -95,7 +95,7 @@ int main(void) {
 
         if (is_virt_keyboard_on != is_virt_keyboard_on_prev) {
             MidiMsg midi_msg_out = {
-                .key  = virt_keyboard_key + 60,
+                .key  = virt_keyboard_key + octave*12,
                 .vel   = 1.0,
                 .is_on = is_virt_keyboard_on,
                 .time_stamp = 0
@@ -135,7 +135,7 @@ int main(void) {
         octave_widget(layout_stack_slot(&ls),
                       &virt_keyboard_key,
                       &is_virt_keyboard_on,
-                      midi_msg_in.key - 60,
+                      midi_msg_in.key - octave*12,
                       midi_msg_in.is_on);
 
         slider_widget(layout_stack_slot(&ls), &ui_stuff->slider_vol);
