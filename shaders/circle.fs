@@ -2,13 +2,12 @@
 
 in vec2 fragTexCoord;
 in vec4 fragColor;
-
 out vec4 finalColor;
+uniform vec4 colorParam;
 
 void main()
 {
   float r = 0.5;
-
   // translation to center of texture
   vec2 p = fragTexCoord - vec2(0.5);
 
@@ -18,9 +17,11 @@ void main()
     finalColor = fragColor;
   }
   else if ( s <= 0) {
-    float color_value = (1.0 - 2.0*(s + 0.5)) * 0.35;
-    finalColor = vec4(0, color_value, 0, 1);
+    float color_factor = (1.0 - 2.0*(s + 0.5)) * 0.35;
+//    finalColor = vec4(0, color_value, 0, 1);
+    finalColor = color_factor * colorParam;
+    finalColor.w = 1.0;
   } else {
-    finalColor = vec4(0, 0, 0, 1);
+    finalColor = vec4(0, 0, 0, 0.0);
   }
 }

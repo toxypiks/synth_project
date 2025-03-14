@@ -314,17 +314,18 @@ void adsr_display_widget(UiRect rect, UiADSR *adsr, Color c, float adsr_height, 
 
   Texture2D texture = { rlGetTextureIdDefault(), 1, 1, 1, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8};
 
+
   BeginShaderMode(adsr->circ_shader);
   Rectangle source = {0.0f, 0.0f, 1.0f, 1.0f};
   Vector2 origin = { 0.0f, 0.0f };
-  DrawTexturePro(texture, source, tip, origin, 0.0, GREEN);
+  DrawTexturePro(texture, source, tip, origin, 0.0, BLUE);
   EndShaderMode();
 
   BeginShaderMode(adsr->rec_shader);
-  DrawTexturePro(texture, source, rec, origin, 0.0, GREEN);
+  DrawTexturePro(texture, source, rec, origin, 0.0, BLUE);
   EndShaderMode();
 
-  DrawLineEx(progress_p0, progress_p1, thick, GREEN);
+  DrawLineEx(progress_p0, progress_p1, thick, MAGENTA);
 }
 
 void adsr_widget(UiRect rect, UiADSR *adsr, float adsr_height, float adsr_width)
@@ -523,7 +524,8 @@ UiStuff* create_ui_stuff(size_t screen_width, size_t screen_height){
 
   ui_stuff->adsr.rec_shader = LoadShader(NULL, "../shaders/rectangle.fs");
   ui_stuff->adsr.circ_shader = LoadShader(NULL, "../shaders/circle.fs");
-
+  ui_stuff->adsr.rec_shader_color_param_loc = GetShaderLocation(ui_stuff->adsr.rec_shader, "colorParam");
+  ui_stuff->adsr.circ_shader_color_param_loc = GetShaderLocation(ui_stuff->adsr.circ_shader, "colorParam");
   return ui_stuff;
 }
 void ui_stuff_clear(UiStuff* ui_stuff) {

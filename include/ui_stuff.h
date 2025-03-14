@@ -70,6 +70,8 @@ typedef struct UiADSR {
   SliderState release;
   Shader rec_shader;
   Shader circ_shader;
+  int rec_shader_color_param_loc;
+  int circ_shader_color_param_loc;
 } UiADSR;
 
 typedef struct Text {

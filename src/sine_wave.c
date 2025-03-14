@@ -69,6 +69,8 @@ int main(void) {
     size_t virt_keyboard_key = 0;
     float virt_keyboard_freq = 0;
 
+    float custom_color[4] = {1.0, 0.0, 1.0, 0.4};
+
     while(!WindowShouldClose()) {
         msg_hdling(&msg_hdl, &thread_stuff->raylib_msg_queue);
         /*printf("MidiMsg: key: %d vel: %f is_on: %d \n",
@@ -118,6 +120,12 @@ int main(void) {
 
         float w = GetRenderWidth();
         float h = GetRenderHeight();
+        SetShaderValue(ui_stuff->adsr.rec_shader,
+                       ui_stuff->adsr.rec_shader_color_param_loc,
+                       custom_color, SHADER_UNIFORM_VEC4);
+        SetShaderValue(ui_stuff->adsr.circ_shader,
+                       ui_stuff->adsr.circ_shader_color_param_loc,
+                       custom_color, SHADER_UNIFORM_VEC4);
 
         BeginDrawing();
         // TODO check record toggle on
